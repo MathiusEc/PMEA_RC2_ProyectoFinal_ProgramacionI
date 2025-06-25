@@ -1,20 +1,18 @@
+# Proyecto: Sistema Integral de Gestión y Predicción de Contaminación del Aire en Zonas Urbanas
 
-
-# 🌍 Proyecto: Sistema Integral de Gestión y Predicción de Contaminación del Aire en Zonas Urbanas
-
-## 🎯 Objetivos Propuestos
+## Objetivos Propuestos
 
 - Diseñar una solución de software utilizando técnicas y métodos óptimos, considerando las restricciones del problema en los ámbitos **sociales**, **ambientales** y **económicos**.
 - Realizar un análisis integral del problema, identificando sus principales variables y restricciones.
 - Plantear diversas alternativas de solución y evaluar la más efectiva para abordar el problema de manera holística.
 
-## 🛠️ Descripción del Problema
+## Descripción del Problema
 
 El crecimiento urbano descontrolado y el aumento del tráfico vehicular han elevado los niveles de contaminación atmosférica, afectando la salud pública y el medio ambiente. Contaminantes como **CO₂**, **SO₂**, **NO₂** y **PM2.5** representan serias amenazas.
 
 Un reto crucial es la **falta de sistemas eficientes de monitoreo y predicción**, lo que limita la toma de decisiones a tiempo por parte de las autoridades.
 
-## 🧩 Solución Propuesta
+## Solución Propuesta
 
 Desarrollar un **programa en lenguaje C** que:
 
@@ -23,7 +21,7 @@ Desarrollar un **programa en lenguaje C** que:
 - Genere alertas preventivas.
 - Ofrezca recomendaciones para mitigar los efectos nocivos de la contaminación.
 
-## ✅ Requerimientos Funcionales
+## Requerimientos Funcionales
 
 1. **Monitoreo Actual**
    - Calcular niveles actuales de contaminación.
@@ -44,7 +42,7 @@ Desarrollar un **programa en lenguaje C** que:
 6. **Exportación de Datos**
    - Generar archivos con los datos históricos y predicciones para análisis posterior.
 
-## 💾 Requerimientos Técnicos
+## Requerimientos Técnicos
 
 - Uso de:
   - **Arreglos**
