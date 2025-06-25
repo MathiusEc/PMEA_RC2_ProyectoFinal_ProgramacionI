@@ -33,3 +33,17 @@
  y recomendaciones que permitan tomar decisiones para mitigar los efectos nocivos de
  la contaminación atmosférica.
  */
+
+
+ #include <stdio.h>
+ #include <string.h>
+ #include "funciones.h"
+
+void leerCadena(char *cadena, int num)
+{
+    fflush(stdin);
+    fgets(cadena, num, stdin);
+
+    int len = strlen(cadena) - 1;
+    cadena[len] = '\0';
+}
