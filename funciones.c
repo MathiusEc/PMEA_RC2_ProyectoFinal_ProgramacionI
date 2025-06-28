@@ -37,6 +37,7 @@
 
  #include <stdio.h>
  #include <string.h>
+ #include <math.h>
  #include "funciones.h"
 
 void leerCadena(char *cadena, int num)
