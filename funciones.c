@@ -55,17 +55,18 @@ int menu()
     {
         printf("==========MENU PRINCIPAL==========\n");
         printf("1. Monitoreo Actual\n");
-        printf("2. Predicción de Contaminación\n");
+        printf("2. Prediccion de Contaminacion\n");
         printf("3. Alertas Preventivas\n");
-        printf("4. Promedios y Comparación OMS\n");
+        printf("4. Promedios y Comparacion OMS\n");
         printf("5. Recomendaciones\n");
-        printf("6. Exportación de Datos\n");
+        printf("6. Exportacion de Datos\n");
         printf("7. Salir\n");
-        printf("Seleccione una opción: ");
+        printf("Seleccione una opcion: ");
+        fflush(stdin);
         int val = scanf("%d", &opc);
         if (val != 1 || opc < 1 || opc > 7)
         {
-            printf("Opción inválida. Por favor, intente de nuevo.\n");
+            printf("Opción invalida. Por favor, intente de nuevo.\n");
         }
     } while (opc != 7);
 }
