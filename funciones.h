@@ -72,3 +72,4 @@ typedef struct {
 
 //PROTIPADO DE FUNCIONES
 void leerCadena(char *cadena, int num);
+int menu();

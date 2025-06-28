@@ -1,13 +1,13 @@
 /*
  Proyecto: Sistema Integral de Gestión y Predicción de Contaminación del Aire en Zonas Urbanas
- 
+
  * Resumen General:
  Este programa en lenguaje C tiene como objetivo principal monitorear, predecir y gestionar
  la contaminación del aire en zonas urbanas. Busca ofrecer una solución tecnológica
  que aborde los desafíos sociales, ambientales y económicos derivados del aumento
  de contaminantes como CO₂, SO₂, NO₂ y PM2.5, especialmente ante la falta de sistemas
  eficientes de monitoreo y predicción.
- 
+
  * Funcionalidades Clave:
  1. Monitoreo Actual: Calcula y compara los niveles de contaminación en al menos 5 zonas
  urbanas con límites aceptables.
@@ -21,24 +21,23 @@
  de actividades en exteriores.
  6. Exportación de Datos: Genera archivos para almacenar datos históricos y predicciones,
  facilitando análisis posteriores.
- 
+
  * Requerimientos Técnicos:
  - Implementación usando arreglos, estructuras, punteros, funciones y manejo de archivos.
  - Los datos históricos se guardarán en archivos para asegurar su persistencia.
  - Restricción importante: No se permite el uso de librerías externas para manipulación
  de archivos o cálculos avanzados.
- 
+
  * Propósito Ético:
  Contribuir a la salud pública y la protección ambiental mediante la información oportuna
  y recomendaciones que permitan tomar decisiones para mitigar los efectos nocivos de
  la contaminación atmosférica.
  */
 
-
- #include <stdio.h>
- #include <string.h>
- #include <math.h>
- #include "funciones.h"
+#include <stdio.h>
+#include <string.h>
+#include <math.h>
+#include "funciones.h"
 
 void leerCadena(char *cadena, int num)
 {
@@ -47,4 +46,26 @@ void leerCadena(char *cadena, int num)
 
     int len = strlen(cadena) - 1;
     cadena[len] = '\0';
+}
+
+int menu()
+{
+    int opc;
+    do
+    {
+        printf("==========MENU PRINCIPAL==========\n");
+        printf("1. Monitoreo Actual\n");
+        printf("2. Predicción de Contaminación\n");
+        printf("3. Alertas Preventivas\n");
+        printf("4. Promedios y Comparación OMS\n");
+        printf("5. Recomendaciones\n");
+        printf("6. Exportación de Datos\n");
+        printf("7. Salir\n");
+        printf("Seleccione una opción: ");
+        int val = scanf("%d", &opc);
+        if (val != 1 || opc < 1 || opc > 7)
+        {
+            printf("Opción inválida. Por favor, intente de nuevo.\n");
+        }
+    } while (opc != 7);
 }

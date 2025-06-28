@@ -33,3 +33,15 @@
  y recomendaciones que permitan tomar decisiones para mitigar los efectos nocivos de
  la contaminación atmosférica.
  */
+
+
+#include <stdio.h>
+#include <string.h>
+#include <math.h>
+#include "funciones.h"
+ 
+int main(int argc, char const *argv[])
+{
+    menu();
+    return 0;
+}
