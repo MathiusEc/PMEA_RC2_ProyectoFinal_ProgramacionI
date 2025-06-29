@@ -50,7 +50,7 @@ void leerCadena(char *cadena, int num)
 
 int menu()
 {
-    int opc;
+    int opc, val;
     do
     {
         printf("==========MENU PRINCIPAL==========\n");
@@ -60,15 +60,95 @@ int menu()
         printf("4. Promedios y Comparacion OMS\n");
         printf("5. Recomendaciones\n");
         printf("6. Exportacion de Datos\n");
-        printf("7. Salir\n");
+        printf("0. Salir\n");
         printf("Seleccione una opcion: ");
         fflush(stdin);
         int val = scanf("%d", &opc);
         fflush(stdin);
-        if (val != 1 || opc < 1 || opc > 7)
+        if (val != 1 || opc < 0 || opc > 6)
         {
             printf("Opción invalida. Por favor, intente de nuevo.\n");
         }
-    } while (opc != 7);
+    } while (val != 1 || opc < 0 || opc > 6);
     return opc;
+}
+
+void guardarZonas(ZonaUrbana *zonas, int contZonas)
+{
+    FILE *f;
+    f = fopen("zonas.dat", "wb+"); // wb+ es para escribir y leer en binario
+    if (f != NULL) {
+        fwrite(&contZonas, sizeof(int), 1, f); // Guardar la cantidad de zonas
+        fwrite(zonas, sizeof(ZonaUrbana), contZonas, f); // Guardar las zonas urbanas
+        fclose(f);
+    }
+}
+
+void inicializarZonas(ZonaUrbana zonas[])
+{
+    // Inicializar todas las zonas en cero primero
+    for(int i = 0; i < MAX_ZONAS; i++) {
+        // Inicializar todo en cero
+        zonas[i].id_zona = 0;
+        zonas[i].dias_registrados = 0;
+        
+        // Inicializar niveles actuales en cero
+        zonas[i].niveles_actuales.co2 = 0.0;
+        zonas[i].niveles_actuales.so2 = 0.0;
+        zonas[i].niveles_actuales.no2 = 0.0;
+        zonas[i].niveles_actuales.pm25 = 0.0;
+        
+        // Inicializar clima actual en cero
+        zonas[i].clima_actual.temperatura = 0.0;
+        zonas[i].clima_actual.velocidad_viento = 0.0;
+        zonas[i].clima_actual.humedad = 0.0;
+        zonas[i].clima_actual.presion_atmosferica = 0.0;
+        
+        // Inicializar promedios de 30 días en cero
+        for(int j = 0; j < 4; j++) {
+            zonas[i].promedio_30_dias[j] = 0.0;
+        }
+        
+        // Inicializar histórico en cero
+        for(int k = 0; k < MAX_DIAS_HISTORICOS; k++) {
+            zonas[i].historico[k].co2 = 0.0;
+            zonas[i].historico[k].so2 = 0.0;
+            zonas[i].historico[k].no2 = 0.0;
+            zonas[i].historico[k].pm25 = 0.0;
+        }
+    }
+    
+    // Solo asignar nombres y IDs a las 5 zonas de Quito
+    strcpy(zonas[0].nombre, "Centro Historico");
+    zonas[0].id_zona = 1;
+    
+    strcpy(zonas[1].nombre, "Norte - La Carolina");
+    zonas[1].id_zona = 2;
+    
+    strcpy(zonas[2].nombre, "Sur - Quitumbe");
+    zonas[2].id_zona = 3;
+    
+    strcpy(zonas[3].nombre, "Valle Los Chillos");
+    zonas[3].id_zona = 4;
+    
+    strcpy(zonas[4].nombre, "Cumbaya - Tumbaco");
+    zonas[4].id_zona = 5;
+    
+    guardarZonas(zonas, 5); // Guardar las zonas inicializadas en el archivo
+}
+
+int leerZonas(ZonaUrbana *zonas, int *contZonas)
+{
+    FILE *f;
+    f = fopen("zonas.dat", "rb+"); // rb+ es para leer y escribir en binario
+    if (f == NULL)
+    {
+        *contZonas = 0; // Si no existe el archivo, no hay zonas
+        return 0; // Retornar 0 si no se pudo abrir el archivo
+    }
+    
+    fread(contZonas, sizeof(int), 1, f); // Leer la cantidad de zonas
+    fread(zonas, sizeof(ZonaUrbana), *contZonas, f); // Leer las zonas del archivo
+    fclose(f);
+    return 1; // Retornar 1 si se leyeron las zonas correctamente
 }

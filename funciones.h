@@ -74,3 +74,9 @@ typedef struct {
 //PROTIPADO DE FUNCIONES
 void leerCadena(char *cadena, int num);
 int menu();
+
+void inicializarZonas(ZonaUrbana zonas[]);
+void guardarZonas(ZonaUrbana *zonas, int contZonas);
+void cargarZonas(ZonaUrbana zonas[], int *contZonas);
+int leerZonas(ZonaUrbana *zonas, int *contZonas);
+
