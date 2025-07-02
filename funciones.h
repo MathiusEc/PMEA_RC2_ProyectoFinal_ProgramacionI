@@ -85,3 +85,6 @@ void guardarTodasLasZonas(ZonaUrbana zonas[]);
 int cargarZona(ZonaUrbana *zona, int id_zona);
 int cargarTodasLasZonas(ZonaUrbana zonas[]);
 
+// Funciones principales del sistema
+void registroDatosDiario(ZonaUrbana zonas[]);
+

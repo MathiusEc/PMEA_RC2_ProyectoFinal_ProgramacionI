@@ -37,7 +37,6 @@
 
  #include <stdio.h>
  #include <string.h>
- #include <stdlib.h>
  #include "funciones.h"
 
 void leerCadena(char *cadena, int num)
@@ -55,22 +54,23 @@ int menu()
     do
     {
         printf("==========MENU PRINCIPAL==========\n");
-        printf("1. Monitoreo Actual\n");
-        printf("2. Prediccion de Contaminacion\n");
-        printf("3. Alertas Preventivas\n");
-        printf("4. Promedios y Comparacion OMS\n");
-        printf("5. Recomendaciones\n");
-        printf("6. Exportacion de Datos\n");
+        printf("1. Registro de Datos Diarios\n");
+        printf("2. Monitoreo Actual\n");
+        printf("3. Prediccion de Contaminacion\n");
+        printf("4. Alertas Preventivas\n");
+        printf("5. Promedios y Comparacion OMS\n");
+        printf("6. Recomendaciones\n");
+        printf("7. Estado del Sistema\n");
         printf("0. Salir\n");
         printf("Seleccione una opcion: ");
         fflush(stdin);
-        int val = scanf("%d", &opc);
+        val = scanf("%d", &opc);
         fflush(stdin);
-        if (val != 1 || opc < 0 || opc > 6)
+        if (val != 1 || opc < 0 || opc > 7)
         {
             printf("Opción invalida. Por favor, intente de nuevo.\n");
         }
-    } while (val != 1 || opc < 0 || opc > 6);
+    } while (val != 1 || opc < 0 || opc > 7);
     return opc;
 }
 
@@ -128,33 +128,6 @@ void inicializarZonas(ZonaUrbana zonas[])
     guardarTodasLasZonas(zonas);
 }
 
-void guardarZonas(ZonaUrbana *zonas, int contZonas)
-{
-    FILE *f;
-    f = fopen("zonas.dat", "wb+"); // wb+ es para escribir y leer en binario
-    if (f != NULL) {
-        fwrite(&contZonas, sizeof(int), 1, f); // Guardar la cantidad de zonas
-        fwrite(zonas, sizeof(ZonaUrbana), contZonas, f); // Guardar las zonas urbanas
-        fclose(f);
-    }
-}
-
-int leerZonas(ZonaUrbana *zonas, int *contZonas)
-{
-    FILE *f;
-    f = fopen("zonas.dat", "rb+"); // rb+ es para leer y escribir en binario
-    if (f == NULL)
-    {
-        *contZonas = 0; // Si no existe el archivo, no hay zonas
-        return 0; // Retornar 0 si no se pudo abrir el archivo
-    }
-    
-    fread(contZonas, sizeof(int), 1, f); // Leer la cantidad de zonas
-    fread(zonas, sizeof(ZonaUrbana), *contZonas, f); // Leer las zonas del archivo
-    fclose(f);
-    return 1; // Retornar 1 si se leyeron las zonas correctamente
-}
-
 // =================== FUNCIONES PARA ARCHIVOS SEPARADOS ===================
 
 void guardarZona(ZonaUrbana *zona) {
@@ -167,7 +140,9 @@ void guardarZona(ZonaUrbana *zona) {
     if(f != NULL) {
         fwrite(zona, sizeof(ZonaUrbana), 1, f);
         fclose(f);
-        printf("Zona %s guardada en %s\n", zona->nombre, nombre_archivo);
+        // Guardado silencioso para no interrumpir la experiencia del usuario
+    } else {
+        printf("⚠ Error al guardar datos de la zona %s\n", zona->nombre);
     }
 }
 
@@ -182,7 +157,7 @@ int cargarZona(ZonaUrbana *zona, int id_zona) {
     char nombre_archivo[100];
     sprintf(nombre_archivo, "zona_%d.dat", id_zona);
     
-    FILE *f = fopen(nombre_archivo, "rb");
+    FILE *f = fopen(nombre_archivo, "rb+");
     if(f != NULL) {
         if(fread(zona, sizeof(ZonaUrbana), 1, f) == 1) {
             fclose(f);
@@ -206,4 +181,68 @@ int cargarTodasLasZonas(ZonaUrbana zonas[]) {
     
     printf("Total de zonas cargadas: %d/%d\n", zonas_cargadas, MAX_ZONAS);
     return zonas_cargadas;
+}
+
+void registroDatosDiario(ZonaUrbana zonas[]) {
+    int id_zona, val;
+    // Mostrar zonas disponibles
+    cargarTodasLasZonas(zonas);
+    for(int i = 0; i < MAX_ZONAS; i++) {
+        printf("%d. %s\n", zonas[i].id_zona, zonas[i].nombre);
+    }
+
+    do
+    {
+        printf("Seleccione la zona para registrar datos (1-%d): ", MAX_ZONAS);
+        val = scanf("%d", &id_zona);
+        fflush(stdin);
+
+        if (val != 1 || id_zona < 1 || id_zona > MAX_ZONAS){
+            printf("Opción inválida. Por favor, intente de nuevo.\n");
+        }
+    } while (val != 1 || id_zona < 1 || id_zona > MAX_ZONAS);
+
+    // Mover datos históricos (FIFO - lo más reciente al inicio)
+    for(int i = MAX_DIAS_HISTORICOS-1; i > 0; i--) {
+        zonas[id_zona - 1].historico[i] = zonas[id_zona - 1].historico[i-1];
+    }
+
+    // Leer nuevos datos
+    printf("Ingrese los niveles de contaminantes para la zona %s:\n", zonas[id_zona - 1].nombre);
+    printf("CO₂ (ppm): ");
+    scanf("%f", &zonas[id_zona - 1].niveles_actuales.co2);
+    printf("SO₂ (µg/m³): ");
+    scanf("%f", &zonas[id_zona - 1].niveles_actuales.so2);
+    printf("NO₂ (µg/m³): ");
+    scanf("%f", &zonas[id_zona - 1].niveles_actuales.no2);
+    printf("PM₂.₅ (µg/m³): ");
+    scanf("%f", &zonas[id_zona - 1].niveles_actuales.pm25);
+
+    // Registrar datos climáticos
+    printf("Ingrese los datos climáticos para la zona %s:\n", zonas[id_zona - 1].nombre);
+    printf("Temperatura (°C): ");
+    scanf("%f", &zonas[id_zona - 1].clima_actual.temperatura);
+    printf("Velocidad del viento (km/h): ");
+    scanf("%f", &zonas[id_zona - 1].clima_actual.velocidad_viento);
+    printf("Humedad (%%): ");
+    scanf("%f", &zonas[id_zona - 1].clima_actual.humedad);
+    printf("Presión (hPa): ");
+    scanf("%f", &zonas[id_zona - 1].clima_actual.presion_atmosferica);
+
+    // Actualizar niveles actuales
+    zonas[id_zona - 1].historico[0] = zonas[id_zona - 1].niveles_actuales;
+
+    // Incrementar contador de días registrados
+    if (zonas[id_zona - 1].dias_registrados < MAX_DIAS_HISTORICOS) {
+        zonas[id_zona - 1].dias_registrados++;
+    }
+
+    printf("✅ Datos registrados correctamente para la zona %s.\n", zonas[id_zona - 1].nombre);
+    
+    // Guardar zona actualizada automáticamente
+    guardarZona(&zonas[id_zona - 1]);
+    
+    // Limpiar buffer de entrada
+    while(getchar() != '\n');
+
 }
