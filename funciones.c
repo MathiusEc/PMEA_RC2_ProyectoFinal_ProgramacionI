@@ -37,6 +37,7 @@
 
  #include <stdio.h>
  #include <string.h>
+ #include <stdlib.h>
  #include "funciones.h"
 
 void leerCadena(char *cadena, int num)
@@ -71,17 +72,6 @@ int menu()
         }
     } while (val != 1 || opc < 0 || opc > 6);
     return opc;
-}
-
-void guardarZonas(ZonaUrbana *zonas, int contZonas)
-{
-    FILE *f;
-    f = fopen("zonas.dat", "wb+"); // wb+ es para escribir y leer en binario
-    if (f != NULL) {
-        fwrite(&contZonas, sizeof(int), 1, f); // Guardar la cantidad de zonas
-        fwrite(zonas, sizeof(ZonaUrbana), contZonas, f); // Guardar las zonas urbanas
-        fclose(f);
-    }
 }
 
 void inicializarZonas(ZonaUrbana zonas[])
@@ -134,7 +124,19 @@ void inicializarZonas(ZonaUrbana zonas[])
     strcpy(zonas[4].nombre, "Cumbaya - Tumbaco");
     zonas[4].id_zona = 5;
     
-    guardarZonas(zonas, 5); // Guardar las zonas inicializadas en el archivo
+    // Guardar cada zona en archivo separado
+    guardarTodasLasZonas(zonas);
+}
+
+void guardarZonas(ZonaUrbana *zonas, int contZonas)
+{
+    FILE *f;
+    f = fopen("zonas.dat", "wb+"); // wb+ es para escribir y leer en binario
+    if (f != NULL) {
+        fwrite(&contZonas, sizeof(int), 1, f); // Guardar la cantidad de zonas
+        fwrite(zonas, sizeof(ZonaUrbana), contZonas, f); // Guardar las zonas urbanas
+        fclose(f);
+    }
 }
 
 int leerZonas(ZonaUrbana *zonas, int *contZonas)
@@ -151,4 +153,57 @@ int leerZonas(ZonaUrbana *zonas, int *contZonas)
     fread(zonas, sizeof(ZonaUrbana), *contZonas, f); // Leer las zonas del archivo
     fclose(f);
     return 1; // Retornar 1 si se leyeron las zonas correctamente
+}
+
+// =================== FUNCIONES PARA ARCHIVOS SEPARADOS ===================
+
+void guardarZona(ZonaUrbana *zona) {
+    char nombre_archivo[100];
+    
+    // Crear nombre de archivo basado en ID
+    sprintf(nombre_archivo, "zona_%d.dat", zona->id_zona);
+    
+    FILE *f = fopen(nombre_archivo, "wb");
+    if(f != NULL) {
+        fwrite(zona, sizeof(ZonaUrbana), 1, f);
+        fclose(f);
+        printf("Zona %s guardada en %s\n", zona->nombre, nombre_archivo);
+    }
+}
+
+void guardarTodasLasZonas(ZonaUrbana zonas[]) {
+    printf("Guardando zonas en archivos separados...\n");
+    for(int i = 0; i < MAX_ZONAS; i++) {
+        guardarZona(&zonas[i]);
+    }
+}
+
+int cargarZona(ZonaUrbana *zona, int id_zona) {
+    char nombre_archivo[100];
+    sprintf(nombre_archivo, "zona_%d.dat", id_zona);
+    
+    FILE *f = fopen(nombre_archivo, "rb");
+    if(f != NULL) {
+        if(fread(zona, sizeof(ZonaUrbana), 1, f) == 1) {
+            fclose(f);
+            printf("Zona %s cargada desde %s\n", zona->nombre, nombre_archivo);
+            return 1; // Éxito
+        }
+        fclose(f);
+    }
+    return 0; // No se pudo cargar
+}
+
+int cargarTodasLasZonas(ZonaUrbana zonas[]) {
+    int zonas_cargadas = 0;
+    
+    printf("Cargando zonas desde archivos separados...\n");
+    for(int i = 0; i < MAX_ZONAS; i++) {
+        if(cargarZona(&zonas[i], i+1)) {
+            zonas_cargadas++;
+        }
+    }
+    
+    printf("Total de zonas cargadas: %d/%d\n", zonas_cargadas, MAX_ZONAS);
+    return zonas_cargadas;
 }

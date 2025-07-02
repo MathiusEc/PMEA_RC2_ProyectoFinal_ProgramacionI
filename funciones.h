@@ -1,4 +1,3 @@
-
 #define MAX_ZONAS 5
 #define MAX_DIAS_HISTORICOS 30
 #define MAX_NOMBRE 50
@@ -75,8 +74,14 @@ typedef struct {
 void leerCadena(char *cadena, int num);
 int menu();
 
+// Funciones originales
 void inicializarZonas(ZonaUrbana zonas[]);
 void guardarZonas(ZonaUrbana *zonas, int contZonas);
-void cargarZonas(ZonaUrbana zonas[], int *contZonas);
-int leerZonas(ZonaUrbana *zonas, int *contZonas);
+int leerZonas(ZonaUrbana zonas[], int *contZonas);
+
+// Funciones para archivos separados (simples)
+void guardarZona(ZonaUrbana *zona);
+void guardarTodasLasZonas(ZonaUrbana zonas[]);
+int cargarZona(ZonaUrbana *zona, int id_zona);
+int cargarTodasLasZonas(ZonaUrbana zonas[]);
 
