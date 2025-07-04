@@ -65,47 +65,35 @@ int main(int argc, char *argv[]) {
         
         switch(opcion) {
             case 1:
-                printf("\n=== REGISTRO DE DATOS DIARIOS ===\n");
                 registroDatosDiario(zonas);
                 break;
                 
             case 2:
-                printf("\n=== MONITOREO ACTUAL ===\n");
-                printf("Función en desarrollo...\n");
-                // monitoreoActual(zonas);
+                monitoreoActual(zonas);
                 break;
                 
             case 3:
-                printf("\n=== PREDICCIÓN DE CONTAMINACIÓN ===\n");
-                printf("Función en desarrollo...\n");
-                // prediccionContaminacion(zonas);
+                // Mostrar monitoreo detallado por zona
                 break;
                 
             case 4:
-                printf("\n=== ALERTAS PREVENTIVAS ===\n");
-                printf("Función en desarrollo...\n");
-                // alertasPreventivas(zonas);
+                // Mostrar mapa de calidad del aire
                 break;
                 
             case 5:
-                printf("\n=== PROMEDIOS Y COMPARACIÓN OMS ===\n");
-                printf("Función en desarrollo...\n");
-                // promediosOMS(zonas);
+                // Mostrar tendencias y promedios
                 break;
                 
             case 6:
-                printf("\n=== RECOMENDACIONES ===\n");
-                printf("Función en desarrollo...\n");
-                // generarRecomendaciones(zonas);
+                // Mostrar pronóstico de contaminación
                 break;
                 
             case 7:
-                printf("\n=== ESTADO DEL SISTEMA ===\n");
-                printf("Zonas configuradas: %d\n", MAX_ZONAS);
-                for(int i = 0; i < MAX_ZONAS; i++) {
-                    printf("%d. %s - Días registrados: %d\n", 
-                           zonas[i].id_zona, zonas[i].nombre, zonas[i].dias_registrados);
-                }
+                // Mostrar alertas y notificaciones
+                break;
+                
+            case 8:
+                mostrarEstadoSistema(zonas);  
                 break;
                 
             case 0:
@@ -121,11 +109,8 @@ int main(int argc, char *argv[]) {
                 break;
         }
         
-        // Pausa para que el usuario pueda leer los resultados
-        if(opcion != 0) {
-            printf("\nPresione Enter para continuar...");
-            while(getchar() != '\n'); // Limpiar buffer de entrada
-        }
+        // Las funciones ya manejan su propia pausa, excepto la gestión de datos
+        // que tiene su propio bucle interno
         
     } while(opcion != 0);
     
