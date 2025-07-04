@@ -54,7 +54,7 @@ int menu()
     do
     {
         printf("\nSISTEMA DE CALIDAD DEL AIRE - QUITO\n");
-        printf("══════════════════════════════════════════════\n");
+        printf("==============================================\n");
         printf("1. Registrar Datos                          \n");
         printf("2. Calidad del Aire Ahora (Resumen)       \n");
         printf("3. Monitoreo Detallado por Zona           \n");  
@@ -65,16 +65,16 @@ int menu()
         printf("8. Gestión de Datos                       \n");
         printf("9. Estado del Sistema                      \n");
         printf("0. Salir                                   \n");
-        printf("══════════════════════════════════════════════\n");
+        printf("==============================================\n");
         printf("Seleccione una opción: ");
         fflush(stdin);
         val = scanf("%d", &opc);
         fflush(stdin);
-        if (val != 1 || opc < 0 || opc > 8)
+        if (val != 1 || opc < 0 || opc > 9)
         {
             printf("Opción inválida. Por favor, intente de nuevo.\n");
         }
-    } while (val != 1 || opc < 0 || opc > 8);
+    } while (val != 1 || opc < 0 || opc > 9);
     return opc;
 }
 

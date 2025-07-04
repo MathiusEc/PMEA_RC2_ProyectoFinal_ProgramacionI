@@ -44,7 +44,7 @@ int main(int argc, char *argv[]) {
     int zonas_cargadas = 0;
     
     printf("SISTEMA DE MONITOREO DE CALIDAD DEL AIRE - QUITO\n");
-    printf("═══════════════════════════════════════════════════\n");
+    printf("======================================================\n");
     printf("Inicializando sistema...\n\n");
     
     // Intentar cargar zonas desde archivos separados
@@ -94,6 +94,10 @@ int main(int argc, char *argv[]) {
                 
             case 8:
                 mostrarEstadoSistema(zonas);  
+                break;
+            
+            case 9:
+                //Gestión de datos
                 break;
                 
             case 0:
