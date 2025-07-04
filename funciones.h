@@ -99,12 +99,10 @@ typedef struct {
 void leerCadena(char *cadena, int num);
 int menu();
 
-// Funciones originales
+// Funciones de inicialización
 void inicializarZonas(ZonaUrbana zonas[]);
-void guardarZonas(ZonaUrbana *zonas, int contZonas);
-int leerZonas(ZonaUrbana zonas[], int *contZonas);
 
-// Funciones para archivos separados (simples)
+// Funciones para archivos separados
 void guardarZona(ZonaUrbana *zona);
 void guardarTodasLasZonas(ZonaUrbana zonas[]);
 int cargarZona(ZonaUrbana *zona, int id_zona);
@@ -113,6 +111,5 @@ int cargarTodasLasZonas(ZonaUrbana zonas[]);
 // Funciones principales del sistema
 void registroDatosDiario(ZonaUrbana zonas[]);
 void monitoreoActual(ZonaUrbana zonas[]);
-void gestionDatos(ZonaUrbana zonas[]); // Gestión y entrada de datos
-void mostrarEstadoSistema(ZonaUrbana zonas[]); // Estado del sistema (ya implementada)
+void mostrarEstadoSistema(ZonaUrbana zonas[]);
 
