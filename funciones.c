@@ -62,7 +62,7 @@ int menu()
     do
     {
         printf("\nSISTEMA DE CALIDAD DEL AIRE - QUITO\n");
-        printf("==============================================\n");
+        printf("===========================================\n");
         printf("1. Registrar Datos                          \n");
         printf("2. Monitoreo                                \n");
         printf("3. Tendencias e Histórico                 \n");
@@ -71,7 +71,7 @@ int menu()
         printf("6. Gestión de Datos                       \n");
         printf("7. Estado del Sistema                     \n");
         printf("0. Salir                                   \n");
-        printf("==============================================\n");
+        printf("===========================================\n");
         printf("Seleccione una opción: ");
         fflush(stdin);
         val = scanf("%d", &opc);
@@ -152,7 +152,7 @@ void guardarZona(ZonaUrbana *zona) {
         fclose(f);
         // Guardado silencioso para no interrumpir la experiencia del usuario
     } else {
-        printf("⚠ Error al guardar datos de la zona %s\n", zona->nombre);
+        printf("Error al guardar datos de la zona %s\n", zona->nombre);
     }
 }
 
@@ -208,7 +208,7 @@ void registroDatosDiario(ZonaUrbana zonas[]) {
         fflush(stdin);
 
         if (val != 1 || id_zona < 1 || id_zona > MAX_ZONAS){
-            printf("Opción inválida. Por favor, intente de nuevo.\n");
+            printf("Opcion invalida. Por favor, intente de nuevo.\n");
         }
     } while (val != 1 || id_zona < 1 || id_zona > MAX_ZONAS);
 
@@ -219,24 +219,24 @@ void registroDatosDiario(ZonaUrbana zonas[]) {
 
     // Leer nuevos datos
     printf("Ingrese los niveles de contaminantes para la zona %s:\n", zonas[id_zona - 1].nombre);
-    printf("CO₂ (ppm): ");
+    printf("CO2 (ppm): ");
     scanf("%f", &zonas[id_zona - 1].niveles_actuales.co2);
-    printf("SO₂ (µg/m³): ");
+    printf("SO2 (ug/m3): ");
     scanf("%f", &zonas[id_zona - 1].niveles_actuales.so2);
-    printf("NO₂ (µg/m³): ");
+    printf("NO2 (ug/m3): ");
     scanf("%f", &zonas[id_zona - 1].niveles_actuales.no2);
-    printf("PM₂.₅ (µg/m³): ");
+    printf("PM2.5 (ug/m3): ");
     scanf("%f", &zonas[id_zona - 1].niveles_actuales.pm25);
 
     // Registrar datos climáticos
-    printf("Ingrese los datos climáticos para la zona %s:\n", zonas[id_zona - 1].nombre);
-    printf("Temperatura (°C): ");
+    printf("Ingrese los datos climaticos para la zona %s:\n", zonas[id_zona - 1].nombre);
+    printf("Temperatura (Celsius): ");
     scanf("%f", &zonas[id_zona - 1].clima_actual.temperatura);
     printf("Velocidad del viento (km/h): ");
     scanf("%f", &zonas[id_zona - 1].clima_actual.velocidad_viento);
     printf("Humedad (%%): ");
     scanf("%f", &zonas[id_zona - 1].clima_actual.humedad);
-    printf("Presión (hPa): ");
+    printf("Presion (hPa): ");
     scanf("%f", &zonas[id_zona - 1].clima_actual.presion_atmosferica);
 
     // Actualizar niveles actuales
@@ -506,13 +506,13 @@ void monitoreoDetalladoPorZona(ZonaUrbana zonas[]) {
         printf("  Contactar autoridades de salud\n");
     }
     
-    printf("\n════════════════════════════════════════════════════════\n");
+    printf("\n========================================================\n");
 }
 
 void mostrarEstadoSistema(ZonaUrbana zonas[])
 {
     printf("Sistema de Monitoreo - Quito\n");
-    printf("═══════════════════════════════\n\n");
+    printf("==================================\n\n");
     
     // Resumen general
     int zonas_activas = 0;
@@ -552,7 +552,7 @@ void mostrarEstadoSistema(ZonaUrbana zonas[])
 void mostrarTendenciasHistorico(ZonaUrbana zonas[]) {
     printf("=== TENDENCIAS E HISTORICO ===\n");
     printf("Fecha: %s - Hora: %s\n", __DATE__, __TIME__);
-    printf("════════════════════════════════════════════════════════\n\n");
+    printf("======================================================\n\n");
     
     int zona_seleccionada, val;
     
@@ -587,12 +587,12 @@ void mostrarTendenciasHistorico(ZonaUrbana zonas[]) {
     }
     
     printf("\n=== ANALISIS DE TENDENCIAS: %s ===\n", zonas[zona_seleccionada].nombre);
-    printf("════════════════════════════════════════════════════════\n");
+    printf("========================================================\n");
     
     // 1. GRÁFICO DE TENDENCIAS (ASCII)
     printf("\n1. GRAFICOS DE TENDENCIAS (ultimos %d dias):\n", 
            zonas[zona_seleccionada].dias_registrados);
-    printf("──────────────────────────────────────────────────────\n");
+    printf("------------------------------------------------------\n");
     
     // Gráfico de CO2
     printf("\nCO2 (ppm) - Limite OMS: %.1f\n", LIMITE_CO2_OMS);
@@ -647,7 +647,7 @@ void mostrarTendenciasHistorico(ZonaUrbana zonas[]) {
     
     // 2. ANÁLISIS ESTADÍSTICO
     printf("\n2. ANALISIS ESTADISTICO:\n");
-    printf("──────────────────────────────────────────────────────\n");
+    printf("------------------------------------------------------\n");
     
     // Calcular estadísticas
     float suma_co2 = 0, suma_so2 = 0, suma_no2 = 0, suma_pm25 = 0;
@@ -706,7 +706,7 @@ void mostrarTendenciasHistorico(ZonaUrbana zonas[]) {
     
     // 3. ANÁLISIS DE TENDENCIAS
     printf("\n3. ANALISIS DE TENDENCIAS:\n");
-    printf("──────────────────────────────────────────────────────\n");
+    printf("-------------------------------------------------------------\n");
     
     if(zonas[zona_seleccionada].dias_registrados >= 3) {
         // Comparar primeros 3 días vs últimos 3 días
@@ -734,7 +734,7 @@ void mostrarTendenciasHistorico(ZonaUrbana zonas[]) {
     
     // 4. DÍAS PROBLEMÁTICOS
     printf("\n4. DIAS PROBLEMATICOS:\n");
-    printf("──────────────────────────────────────────────────────\n");
+    printf("-----------------------------------------------------------\n");
     
     int dias_exceso = 0;
     printf("Dias con excesos de limites OMS:\n");
@@ -772,7 +772,7 @@ void mostrarTendenciasHistorico(ZonaUrbana zonas[]) {
     
     // 5. RECOMENDACIONES BASADAS EN TENDENCIAS
     printf("\n5. RECOMENDACIONES BASADAS EN TENDENCIAS:\n");
-    printf("──────────────────────────────────────────────────────\n");
+    printf("----------------------------------------------------------\n");
     
     float porcentaje_exceso = (float)dias_exceso / zonas[zona_seleccionada].dias_registrados * 100;
     
@@ -796,5 +796,5 @@ void mostrarTendenciasHistorico(ZonaUrbana zonas[]) {
         printf("- Continuar monitoreo preventivo\n");
     }
     
-    printf("\n════════════════════════════════════════════════════════\n");
+    printf("\n=======================================================\n");
 }
