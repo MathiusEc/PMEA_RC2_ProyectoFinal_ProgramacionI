@@ -11,7 +11,9 @@
  * Funcionalidades Clave:
  1. Monitoreo Actual: Calcula y compara los niveles de contaminación en al menos 5 zonas
  urbanas con límites aceptables.
- 2. Predicción: Estima los niveles de contaminación para las próximas 24 horas usando
+ 2. Predicción: Estima los niveles de contaminación para las próximas 24 horas    }
+    
+    // 4. DIAS PROBLEMATICOS:    // 5. RECOMENDACIONES BASADAS EN TENDENCIAS:ndo
  datos históricos y factores climáticos (temperatura, viento, humedad). Se utilizará
  un algoritmo de promedio ponderado, dando más peso a los datos recientes.
  3. Alertas Preventivas: Emite advertencias si se pronostican niveles superiores a los límites.
@@ -67,20 +69,19 @@ int menu()
         printf("2. Monitoreo                                \n");
         printf("3. Tendencias e Histórico                 \n");
         printf("4. Pronóstico 24 Horas                    \n");
-        printf("5. Alertas y Notificaciones               \n");
-        printf("6. Gestión de Datos                       \n");
-        printf("7. Estado del Sistema                     \n");
+        printf("5. Gestión de Datos                       \n");
+        printf("6. Estado del Sistema                     \n");
         printf("0. Salir                                   \n");
         printf("===========================================\n");
         printf("Seleccione una opción: ");
         fflush(stdin);
         val = scanf("%d", &opc);
         fflush(stdin);
-        if (val != 1 || opc < 0 || opc > 7)
+        if (val != 1 || opc < 0 || opc > 6)
         {
             printf("Opción inválida. Por favor, intente de nuevo.\n");
         }
-    } while (val != 1 || opc < 0 || opc > 7);
+    } while (val != 1 || opc < 0 || opc > 6);
     return opc;
 }
 
@@ -259,8 +260,10 @@ void registroDatosDiario(ZonaUrbana zonas[]) {
 
 void monitoreoDetalladoPorZona(ZonaUrbana zonas[]) {
     // Mostrar fecha y hora al principio
-    printf("=== CALIDAD DEL AIRE - QUITO ===\n");
+    printf("=== MONITOREO DETALLADO POR ZONA ===\n");
     printf("Fecha: %s - Hora: %s\n", __DATE__, __TIME__);
+    printf("===============================================\n");
+    printf("ANALISIS ACTUAL DE CONTAMINANTES POR ZONA\n");
     printf("===============================================\n\n");
     
     // RESUMEN GENERAL INICIAL
@@ -391,52 +394,7 @@ void monitoreoDetalladoPorZona(ZonaUrbana zonas[]) {
     printf("  Humedad:            %.1f%%\n", zonas[zona_seleccionada].clima_actual.humedad);
     printf("  Presion atmosferica: %.1f hPa\n", zonas[zona_seleccionada].clima_actual.presion_atmosferica);
     
-    // 3. ANÁLISIS DE TENDENCIAS (si hay más de 1 día)
-    if(zonas[zona_seleccionada].dias_registrados > 1) {
-        printf("\nANALISIS DE TENDENCIAS:\n");
-        printf("-----------------------------------------------\n");
-        
-        // Calcular promedios históricos
-        float promedio_co2 = 0, promedio_so2 = 0, promedio_no2 = 0, promedio_pm25 = 0;
-        int dias_para_promedio;
-        if(zonas[zona_seleccionada].dias_registrados > 7) {
-            dias_para_promedio = 7;
-        } else {
-            dias_para_promedio = zonas[zona_seleccionada].dias_registrados;
-        }
-        
-        for(int i = 0; i < dias_para_promedio; i++) {
-            promedio_co2 += zonas[zona_seleccionada].historico[i].co2;
-            promedio_so2 += zonas[zona_seleccionada].historico[i].so2;
-            promedio_no2 += zonas[zona_seleccionada].historico[i].no2;
-            promedio_pm25 += zonas[zona_seleccionada].historico[i].pm25;
-        }
-        
-        promedio_co2 /= dias_para_promedio;
-        promedio_so2 /= dias_para_promedio;
-        promedio_no2 /= dias_para_promedio;
-        promedio_pm25 /= dias_para_promedio;
-        
-        printf("  Promedio ultimos %d dias:\n", dias_para_promedio);
-        printf("    CO2:   %.1f ppm\n", promedio_co2);
-        printf("    SO2:   %.1f ug/m3\n", promedio_so2);
-        printf("    NO2:   %.1f ug/m3\n", promedio_no2);
-        printf("    PM2.5: %.1f ug/m3\n", promedio_pm25);
-        
-        // Comparar con nivel actual para mostrar tendencia
-        printf("\n  Tendencia respecto al promedio:\n");
-        if(promedio_co2 != 0) {
-            float diferencia = zonas[zona_seleccionada].niveles_actuales.co2 - promedio_co2;
-            float porcentaje = absoluto(diferencia / promedio_co2 * 100);
-            if(zonas[zona_seleccionada].niveles_actuales.co2 > promedio_co2) {
-                printf("    CO2:   SUBIENDO (%.1f%% mas alto)\n", porcentaje);
-            } else {
-                printf("    CO2:   BAJANDO (%.1f%% mas bajo)\n", porcentaje);
-            }
-        }
-    }
-    
-    // 4. HISTORIAL RECIENTE (últimos 5 días)
+    // 3. HISTORIAL RECIENTE (últimos 5 días)
     printf("\nHISTORIAL RECIENTE:\n");
     printf("-----------------------------------------------\n");
     printf("Dia  | CO2    | SO2    | NO2    | PM2.5  | Estado\n");
@@ -477,7 +435,7 @@ void monitoreoDetalladoPorZona(ZonaUrbana zonas[]) {
                estado);
     }
     
-    // 5. RECOMENDACIONES ESPECÍFICAS
+    // 4. RECOMENDACIONES ESPECÍFICAS
     printf("\nRECOMENDACIONES PARA %s:\n", zonas[zona_seleccionada].nombre);
     printf("-----------------------------------------------\n");
     
@@ -552,6 +510,8 @@ void mostrarEstadoSistema(ZonaUrbana zonas[])
 void mostrarTendenciasHistorico(ZonaUrbana zonas[]) {
     printf("=== TENDENCIAS E HISTORICO ===\n");
     printf("Fecha: %s - Hora: %s\n", __DATE__, __TIME__);
+    printf("======================================================\n");
+    printf("GRAFICOS Y ANALISIS DE DATOS HISTORICOS\n");
     printf("======================================================\n\n");
     
     int zona_seleccionada, val;
@@ -704,11 +664,64 @@ void mostrarTendenciasHistorico(ZonaUrbana zonas[]) {
            promedio_pm25, max_pm25, min_pm25, LIMITE_PM25_OMS,
            (promedio_pm25 > LIMITE_PM25_OMS) ? "EXCEDE" : "OK");
     
-    // 3. ANÁLISIS DE TENDENCIAS
-    printf("\n3. ANALISIS DE TENDENCIAS:\n");
+    // 3. ANÁLISIS DE TENDENCIAS DETALLADO
+    printf("\n3. ANALISIS DE TENDENCIAS DETALLADO:\n");
     printf("-------------------------------------------------------------\n");
     
+    if(zonas[zona_seleccionada].dias_registrados > 1) {
+        // Calcular promedios históricos ponderados
+        int dias_para_promedio = (zonas[zona_seleccionada].dias_registrados > 7) ? 7 : zonas[zona_seleccionada].dias_registrados;
+        
+        float promedio_pond_co2 = 0, promedio_pond_so2 = 0, promedio_pond_no2 = 0, promedio_pond_pm25 = 0;
+        
+        for(int i = 0; i < dias_para_promedio; i++) {
+            promedio_pond_co2 += zonas[zona_seleccionada].historico[i].co2;
+            promedio_pond_so2 += zonas[zona_seleccionada].historico[i].so2;
+            promedio_pond_no2 += zonas[zona_seleccionada].historico[i].no2;
+            promedio_pond_pm25 += zonas[zona_seleccionada].historico[i].pm25;
+        }
+        
+        promedio_pond_co2 /= dias_para_promedio;
+        promedio_pond_so2 /= dias_para_promedio;
+        promedio_pond_no2 /= dias_para_promedio;
+        promedio_pond_pm25 /= dias_para_promedio;
+        
+        printf("PROMEDIO ULTIMOS %d DIAS vs NIVEL ACTUAL:\n", dias_para_promedio);
+        printf("                 | Promedio | Actual  | Diferencia | Tendencia\n");
+        printf("-----------------|----------|---------|------------|----------\n");
+        
+        // Análisis CO2
+        float dif_co2 = zonas[zona_seleccionada].niveles_actuales.co2 - promedio_pond_co2;
+        float porc_co2 = (promedio_pond_co2 != 0) ? absoluto(dif_co2 / promedio_pond_co2 * 100) : 0;
+        printf("CO2 (ppm)        | %-8.1f | %-7.1f | %-10.1f | %s (%.1f%%)\n", 
+               promedio_pond_co2, zonas[zona_seleccionada].niveles_actuales.co2, dif_co2,
+               (zonas[zona_seleccionada].niveles_actuales.co2 > promedio_pond_co2) ? "SUBIENDO" : "BAJANDO", porc_co2);
+        
+        // Análisis SO2
+        float dif_so2 = zonas[zona_seleccionada].niveles_actuales.so2 - promedio_pond_so2;
+        float porc_so2 = (promedio_pond_so2 != 0) ? absoluto(dif_so2 / promedio_pond_so2 * 100) : 0;
+        printf("SO2 (ug/m3)      | %-8.1f | %-7.1f | %-10.1f | %s (%.1f%%)\n", 
+               promedio_pond_so2, zonas[zona_seleccionada].niveles_actuales.so2, dif_so2,
+               (zonas[zona_seleccionada].niveles_actuales.so2 > promedio_pond_so2) ? "SUBIENDO" : "BAJANDO", porc_so2);
+        
+        // Análisis NO2
+        float dif_no2 = zonas[zona_seleccionada].niveles_actuales.no2 - promedio_pond_no2;
+        float porc_no2 = (promedio_pond_no2 != 0) ? absoluto(dif_no2 / promedio_pond_no2 * 100) : 0;
+        printf("NO2 (ug/m3)      | %-8.1f | %-7.1f | %-10.1f | %s (%.1f%%)\n", 
+               promedio_pond_no2, zonas[zona_seleccionada].niveles_actuales.no2, dif_no2,
+               (zonas[zona_seleccionada].niveles_actuales.no2 > promedio_pond_no2) ? "SUBIENDO" : "BAJANDO", porc_no2);
+        
+        // Análisis PM2.5
+        float dif_pm25 = zonas[zona_seleccionada].niveles_actuales.pm25 - promedio_pond_pm25;
+        float porc_pm25 = (promedio_pond_pm25 != 0) ? absoluto(dif_pm25 / promedio_pond_pm25 * 100) : 0;
+        printf("PM2.5 (ug/m3)    | %-8.1f | %-7.1f | %-10.1f | %s (%.1f%%)\n", 
+               promedio_pond_pm25, zonas[zona_seleccionada].niveles_actuales.pm25, dif_pm25,
+               (zonas[zona_seleccionada].niveles_actuales.pm25 > promedio_pond_pm25) ? "SUBIENDO" : "BAJANDO", porc_pm25);
+    }
+    
     if(zonas[zona_seleccionada].dias_registrados >= 3) {
+        printf("\nCOMPARACION TEMPORAL (Primeros vs Ultimos dias):\n");
+        
         // Comparar primeros 3 días vs últimos 3 días
         float promedio_reciente = (zonas[zona_seleccionada].historico[0].co2 + 
                                   zonas[zona_seleccionada].historico[1].co2 + 

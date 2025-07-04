@@ -81,14 +81,10 @@ int main(int argc, char *argv[]) {
                 break;
                 
             case 5:
-                // Mostrar alertas y notificaciones
-                break;
-                
-            case 6:
                 // Gestión de datos
                 break;
             
-            case 7:
+            case 6:
                 mostrarEstadoSistema(zonas);
                 break;
                 
