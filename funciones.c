@@ -237,7 +237,7 @@ void registroDatosDiario(ZonaUrbana zonas[]) {
         zonas[id_zona - 1].dias_registrados++;
     }
 
-    printf("✅ Datos registrados correctamente para la zona %s.\n", zonas[id_zona - 1].nombre);
+    printf("Datos registrados correctamente para la zona %s.\n", zonas[id_zona - 1].nombre);
     
     // Guardar zona actualizada automáticamente
     guardarZona(&zonas[id_zona - 1]);

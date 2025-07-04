@@ -43,7 +43,7 @@ int main(int argc, char *argv[]) {
     int opcion;
     int zonas_cargadas = 0;
     
-    printf("🌍 SISTEMA DE MONITOREO DE CALIDAD DEL AIRE - QUITO\n");
+    printf("SISTEMA DE MONITOREO DE CALIDAD DEL AIRE - QUITO\n");
     printf("═══════════════════════════════════════════════════\n");
     printf("Inicializando sistema...\n\n");
     
@@ -57,7 +57,7 @@ int main(int argc, char *argv[]) {
         zonas_cargadas = MAX_ZONAS;
     }
     
-    printf("✅ Sistema listo con %d zonas operativas\n\n", zonas_cargadas);
+    printf("Sistema listo con %d zonas operativas\n\n", zonas_cargadas);
     
     // Menú principal
     do {
@@ -112,12 +112,12 @@ int main(int argc, char *argv[]) {
                 printf("\n=== SALIENDO DEL SISTEMA ===\n");
                 printf("Guardando datos antes de salir...\n");
                 guardarTodasLasZonas(zonas);
-                printf("✅ Datos guardados correctamente.\n");
+                printf("Datos guardados correctamente.\n");
                 printf("¡Gracias por usar el sistema de monitoreo ambiental!\n");
                 break;
                 
             default:
-                printf("❌ Opción no válida. Por favor, intente de nuevo.\n");
+                printf("Opción no válida. Por favor, intente de nuevo.\n");
                 break;
         }
         
