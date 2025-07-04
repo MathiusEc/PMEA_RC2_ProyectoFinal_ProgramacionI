@@ -73,26 +73,22 @@ int main(int argc, char *argv[]) {
                 break;
                 
             case 3:
-                // Mostrar mapa de calidad del aire
+                mostrarTendenciasHistorico(zonas);
                 break;
                 
             case 4:
-                // Mostrar tendencias y promedios
-                break;
-                
-            case 5:
                 // Mostrar pronóstico de contaminación
                 break;
                 
-            case 6:
+            case 5:
                 // Mostrar alertas y notificaciones
                 break;
                 
-            case 7:
+            case 6:
                 // Gestión de datos
                 break;
             
-            case 8:
+            case 7:
                 mostrarEstadoSistema(zonas);
                 break;
                 

@@ -111,5 +111,6 @@ int cargarTodasLasZonas(ZonaUrbana zonas[]);
 // Funciones principales del sistema
 void registroDatosDiario(ZonaUrbana zonas[]);
 void monitoreoDetalladoPorZona(ZonaUrbana zonas[]);
+void mostrarTendenciasHistorico(ZonaUrbana zonas[]);
 void mostrarEstadoSistema(ZonaUrbana zonas[]);
 
