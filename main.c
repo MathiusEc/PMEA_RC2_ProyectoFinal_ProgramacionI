@@ -77,7 +77,7 @@ int main(int argc, char *argv[]) {
                 break;
                 
             case 4:
-                // Mostrar pronóstico de contaminación
+                prediccionContaminacion24h(zonas);
                 break;
                 
             case 5:
