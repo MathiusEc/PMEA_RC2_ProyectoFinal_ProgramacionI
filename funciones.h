@@ -20,6 +20,22 @@
 #define PESO_DIA_3 0.2    // Tercer día
 #define PESO_RESTO 0.1    // Días anteriores
 
+// Categorías del Índice de Calidad del Aire (AQI) - Similar a AirNow
+#define AQI_BUENA 0          // 0-50: Verde
+#define AQI_MODERADA 1       // 51-100: Amarillo  
+#define AQI_DANINA_SENSIBLES 2  // 101-150: Naranja
+#define AQI_DANINA 3         // 151-200: Rojo
+#define AQI_MUY_DANINA 4     // 201-300: Púrpura
+#define AQI_PELIGROSA 5      // 301-500: Granate
+
+// Rangos AQI
+#define AQI_MAX_BUENA 50
+#define AQI_MAX_MODERADA 100
+#define AQI_MAX_DANINA_SENSIBLES 150
+#define AQI_MAX_DANINA 200
+#define AQI_MAX_MUY_DANINA 300
+#define AQI_MAX_PELIGROSA 500
+
 // Estructura para datos climáticos
 typedef struct {
     float temperatura;
@@ -70,6 +86,31 @@ typedef struct {
     int tipo; // 1=Tráfico, 2=Industrial, 3=Actividades exteriores
 } Recomendacion;
 
+// Estructura para el Índice de Calidad del Aire
+typedef struct {
+    int valor_aqi;           // Número del AQI (0-500)
+    int categoria;           // Categoría (0-5)
+    char contaminante_primario[10]; // PM2.5, NO2, etc.
+    char mensaje[200];       // Mensaje descriptivo
+    char recomendacion[300]; // Recomendación específica
+} IndiceCalidadAire;
+
 //PROTIPADO DE FUNCIONES
 void leerCadena(char *cadena, int num);
 int menu();
+
+// Funciones de inicialización
+void inicializarZonas(ZonaUrbana zonas[]);
+
+// Funciones para archivos separados
+void guardarZona(ZonaUrbana *zona);
+void guardarTodasLasZonas(ZonaUrbana zonas[]);
+int cargarZona(ZonaUrbana *zona, int id_zona);
+int cargarTodasLasZonas(ZonaUrbana zonas[]);
+
+// Funciones principales del sistema
+void registroDatosDiario(ZonaUrbana zonas[]);
+void monitoreoDetalladoPorZona(ZonaUrbana zonas[]);
+void mostrarTendenciasHistorico(ZonaUrbana zonas[]);
+void mostrarEstadoSistema(ZonaUrbana zonas[]);
+

@@ -34,11 +34,9 @@
  la contaminación atmosférica.
  */
 
-
-#include <stdio.h>
-#include <string.h>
-#include <math.h>
-#include "funciones.h"
+ #include <stdio.h>
+ #include <string.h>
+ #include "funciones.h"
  
 int main(int argc, char *argv[]) {
     ZonaUrbana zonas[MAX_ZONAS];
