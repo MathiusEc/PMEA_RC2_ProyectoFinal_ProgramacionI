@@ -40,8 +40,73 @@
 #include <math.h>
 #include "funciones.h"
  
-int main(int argc, char const *argv[])
-{
-    menu();
+int main(int argc, char *argv[]) {
+    ZonaUrbana zonas[MAX_ZONAS];
+    int opcion;
+    int zonas_cargadas = 0;
+    
+    printf("SISTEMA DE MONITOREO DE CALIDAD DEL AIRE - QUITO\n");
+    printf("======================================================\n");
+    printf("Inicializando sistema...\n\n");
+    
+    // Intentar cargar zonas desde archivos separados
+    zonas_cargadas = cargarTodasLasZonas(zonas);
+    
+    // Si no se pudieron cargar las zonas, inicializar por primera vez
+    if(zonas_cargadas == 0) {
+        printf("No se encontraron datos previos. Inicializando zonas...\n");
+        inicializarZonas(zonas);
+        zonas_cargadas = MAX_ZONAS;
+    }
+    
+    printf("Sistema listo con %d zonas operativas\n\n", zonas_cargadas);
+    
+    // Menú principal
+    do {
+        opcion = menu();
+        
+        switch(opcion) {
+            case 1:
+                registroDatosDiario(zonas);
+                break;
+                
+            case 2:
+                monitoreoDetalladoPorZona(zonas);
+                break;
+                
+            case 3:
+                mostrarTendenciasHistorico(zonas);
+                break;
+                
+            case 4:
+                // Mostrar pronóstico de contaminación
+                break;
+                
+            case 5:
+                // Gestión de datos
+                break;
+            
+            case 6:
+                mostrarEstadoSistema(zonas);
+                break;
+                
+            case 0:
+                printf("\n=== SALIENDO DEL SISTEMA ===\n");
+                printf("Guardando datos antes de salir...\n");
+                guardarTodasLasZonas(zonas);
+                printf("Datos guardados correctamente.\n");
+                printf("¡Gracias por usar el sistema de monitoreo ambiental!\n");
+                break;
+                
+            default:
+                printf("Opción no válida. Por favor, intente de nuevo.\n");
+                break;
+        }
+        
+        // Las funciones ya manejan su propia pausa, excepto la gestión de datos
+        // que tiene su propio bucle interno
+        
+    } while(opcion != 0);
+    
     return 0;
 }

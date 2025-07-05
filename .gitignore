@@ -1,5 +1,3 @@
 .vscode/
 # para borrar archivos ejecutables
 *.exe
-# para borrar archivos de data tipo ar.dat
-*.dat
