@@ -121,3 +121,7 @@ float ajustarPorClima(float prediccion_base, DatosClimaticos clima);
 int determinarNivelAlerta(float valor, int tipo_contaminante);
 void mostrarRecomendaciones(int nivel_alerta, char *contaminante);
 
+// Funciones para predicción climática
+DatosClimaticos predecirClima24h(ZonaUrbana *zona);
+float calcularPrediccionClimatica(float *historico_clima, int dias_disponibles);
+
