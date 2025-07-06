@@ -112,5 +112,12 @@ int cargarTodasLasZonas(ZonaUrbana zonas[]);
 void registroDatosDiario(ZonaUrbana zonas[]);
 void monitoreoDetalladoPorZona(ZonaUrbana zonas[]);
 void mostrarTendenciasHistorico(ZonaUrbana zonas[]);
+void prediccionContaminacion24h(ZonaUrbana zonas[]);
 void mostrarEstadoSistema(ZonaUrbana zonas[]);
+
+// Funciones auxiliares para predicción
+float calcularPrediccion(float *historico, int dias_disponibles);
+float ajustarPorClima(float prediccion_base, DatosClimaticos clima);
+int determinarNivelAlerta(float valor, int tipo_contaminante);
+void mostrarRecomendaciones(int nivel_alerta, char *contaminante);
 
