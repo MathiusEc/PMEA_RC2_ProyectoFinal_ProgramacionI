@@ -445,24 +445,20 @@ void monitoreoDetalladoPorZona(ZonaUrbana zonas[]) {
     if(zonas[zona_seleccionada].niveles_actuales.no2 > LIMITE_NO2_OMS) total_excesos++;
     if(zonas[zona_seleccionada].niveles_actuales.pm25 > LIMITE_PM25_OMS) total_excesos++;
     
+    // Determinar nivel de alerta y usar función de recomendaciones
+    int nivel_alerta_zona;
     if(total_excesos == 0) {
-        printf("  Calidad del aire aceptable\n");
-        printf("  Seguro para actividades al aire libre\n");
-        printf("  Ideal para ejercicio exterior\n");
+        nivel_alerta_zona = ALERTA_VERDE;
     } else if(total_excesos <= 1) {
-        printf("  Calidad del aire moderada\n");
-        printf("  Grupos sensibles deben limitar actividades prolongadas\n");
-        printf("  Mantener ventanas cerradas en horas pico\n");
+        nivel_alerta_zona = ALERTA_AMARILLA;
     } else if(total_excesos <= 2) {
-        printf("  Calidad del aire danina para grupos sensibles\n");
-        printf("  Evitar ejercicio al aire libre\n");
-        printf("  Considerar uso de mascarillas\n");
+        nivel_alerta_zona = ALERTA_NARANJA;
     } else {
-        printf("  Calidad del aire peligrosa\n");
-        printf("  Permanecer en interiores\n");
-        printf("  Uso obligatorio de mascarillas\n");
-        printf("  Contactar autoridades de salud\n");
+        nivel_alerta_zona = ALERTA_ROJA;
     }
+    
+    // Reutilizar función de recomendaciones
+    mostrarRecomendaciones(nivel_alerta_zona, "ZONA");
     
     printf("\n========================================================\n");
 }
@@ -561,10 +557,15 @@ void mostrarTendenciasHistorico(ZonaUrbana zonas[]) {
     for(int i = 0; i < 40; i++) printf("-");
     printf("\n");
     
-    int dias_grafico = (zonas[zona_seleccionada].dias_registrados > 10) ? 10 : zonas[zona_seleccionada].dias_registrados;
+    int dias_grafico;
+    if(zonas[zona_seleccionada].dias_registrados > 10) {
+        dias_grafico = 10;
+    } else {
+        dias_grafico = zonas[zona_seleccionada].dias_registrados;
+    }
     
     for(int i = 0; i < dias_grafico; i++) {
-        printf("%-4d | %-6.1f | ", i+1, zonas[zona_seleccionada].historico[i].co2);
+        printf("%4d | %6.1f | ", i+1, zonas[zona_seleccionada].historico[i].co2);
         
         // Crear gráfico ASCII
         int barras = (int)(zonas[zona_seleccionada].historico[i].co2 / LIMITE_CO2_OMS * 20);
@@ -651,18 +652,37 @@ void mostrarTendenciasHistorico(ZonaUrbana zonas[]) {
     printf("ESTADISTICAS GENERALES (%d dias):\n", zonas[zona_seleccionada].dias_registrados);
     printf("                 | Promedio | Maximo  | Minimo  | Limite OMS | Estado\n");
     printf("-----------------|----------|---------|---------|------------|--------\n");
-    printf("CO2 (ppm)        | %-8.1f | %-7.1f | %-7.1f | %-10.1f | %s\n", 
-           promedio_co2, max_co2, min_co2, LIMITE_CO2_OMS,
-           (promedio_co2 > LIMITE_CO2_OMS) ? "EXCEDE" : "OK");
-    printf("SO2 (ug/m3)      | %-8.1f | %-7.1f | %-7.1f | %-10.1f | %s\n", 
-           promedio_so2, max_so2, min_so2, LIMITE_SO2_OMS,
-           (promedio_so2 > LIMITE_SO2_OMS) ? "EXCEDE" : "OK");
-    printf("NO2 (ug/m3)      | %-8.1f | %-7.1f | %-7.1f | %-10.1f | %s\n", 
-           promedio_no2, max_no2, min_no2, LIMITE_NO2_OMS,
-           (promedio_no2 > LIMITE_NO2_OMS) ? "EXCEDE" : "OK");
-    printf("PM2.5 (ug/m3)    | %-8.1f | %-7.1f | %-7.1f | %-10.1f | %s\n", 
-           promedio_pm25, max_pm25, min_pm25, LIMITE_PM25_OMS,
-           (promedio_pm25 > LIMITE_PM25_OMS) ? "EXCEDE" : "OK");
+    printf("CO2 (ppm)\t| %.1f\t| %.1f\t| %.1f\t| %.1f\t| ", 
+           promedio_co2, max_co2, min_co2, LIMITE_CO2_OMS);
+    if(promedio_co2 > LIMITE_CO2_OMS) {
+        printf("EXCEDE\n");
+    } else {
+        printf("OK\n");
+    }
+    
+    printf("SO2 (ug/m3)\t| %.1f\t| %.1f\t| %.1f\t| %.1f\t| ", 
+           promedio_so2, max_so2, min_so2, LIMITE_SO2_OMS);
+    if(promedio_so2 > LIMITE_SO2_OMS) {
+        printf("EXCEDE\n");
+    } else {
+        printf("OK\n");
+    }
+    
+    printf("NO2 (ug/m3)\t| %.1f\t| %.1f\t| %.1f\t| %.1f\t| ", 
+           promedio_no2, max_no2, min_no2, LIMITE_NO2_OMS);
+    if(promedio_no2 > LIMITE_NO2_OMS) {
+        printf("EXCEDE\n");
+    } else {
+        printf("OK\n");
+    }
+    
+    printf("PM2.5 (ug/m3)\t| %.1f\t| %.1f\t| %.1f\t| %.1f\t| ", 
+           promedio_pm25, max_pm25, min_pm25, LIMITE_PM25_OMS);
+    if(promedio_pm25 > LIMITE_PM25_OMS) {
+        printf("EXCEDE\n");
+    } else {
+        printf("OK\n");
+    }
     
     // 3. ANÁLISIS DE TENDENCIAS DETALLADO
     printf("\n3. ANALISIS DE TENDENCIAS DETALLADO:\n");
@@ -670,7 +690,12 @@ void mostrarTendenciasHistorico(ZonaUrbana zonas[]) {
     
     if(zonas[zona_seleccionada].dias_registrados > 1) {
         // Calcular promedios históricos ponderados
-        int dias_para_promedio = (zonas[zona_seleccionada].dias_registrados > 7) ? 7 : zonas[zona_seleccionada].dias_registrados;
+        int dias_para_promedio;
+        if(zonas[zona_seleccionada].dias_registrados > 7) {
+            dias_para_promedio = 7;
+        } else {
+            dias_para_promedio = zonas[zona_seleccionada].dias_registrados;
+        }
         
         float promedio_pond_co2 = 0, promedio_pond_so2 = 0, promedio_pond_no2 = 0, promedio_pond_pm25 = 0;
         
@@ -692,31 +717,71 @@ void mostrarTendenciasHistorico(ZonaUrbana zonas[]) {
         
         // Análisis CO2
         float dif_co2 = zonas[zona_seleccionada].niveles_actuales.co2 - promedio_pond_co2;
-        float porc_co2 = (promedio_pond_co2 != 0) ? absoluto(dif_co2 / promedio_pond_co2 * 100) : 0;
-        printf("CO2 (ppm)        | %-8.1f | %-7.1f | %-10.1f | %s (%.1f%%)\n", 
-               promedio_pond_co2, zonas[zona_seleccionada].niveles_actuales.co2, dif_co2,
-               (zonas[zona_seleccionada].niveles_actuales.co2 > promedio_pond_co2) ? "SUBIENDO" : "BAJANDO", porc_co2);
+        float porc_co2 = 0;
+        if(promedio_pond_co2 != 0) {
+            porc_co2 = absoluto(dif_co2 / promedio_pond_co2 * 100);
+        }
+        
+        printf("CO2 (ppm)\t| %.1f\t| %.1f\t| %.1f\t| ", 
+               promedio_pond_co2, zonas[zona_seleccionada].niveles_actuales.co2, dif_co2);
+        
+        if(zonas[zona_seleccionada].niveles_actuales.co2 > promedio_pond_co2) {
+            printf("SUBIENDO");
+        } else {
+            printf("BAJANDO");
+        }
+        printf(" (%.1f%%)\n", porc_co2);
         
         // Análisis SO2
         float dif_so2 = zonas[zona_seleccionada].niveles_actuales.so2 - promedio_pond_so2;
-        float porc_so2 = (promedio_pond_so2 != 0) ? absoluto(dif_so2 / promedio_pond_so2 * 100) : 0;
-        printf("SO2 (ug/m3)      | %-8.1f | %-7.1f | %-10.1f | %s (%.1f%%)\n", 
-               promedio_pond_so2, zonas[zona_seleccionada].niveles_actuales.so2, dif_so2,
-               (zonas[zona_seleccionada].niveles_actuales.so2 > promedio_pond_so2) ? "SUBIENDO" : "BAJANDO", porc_so2);
+        float porc_so2 = 0;
+        if(promedio_pond_so2 != 0) {
+            porc_so2 = absoluto(dif_so2 / promedio_pond_so2 * 100);
+        }
+        
+        printf("SO2 (ug/m3)\t| %.1f\t| %.1f\t| %.1f\t| ", 
+               promedio_pond_so2, zonas[zona_seleccionada].niveles_actuales.so2, dif_so2);
+        
+        if(zonas[zona_seleccionada].niveles_actuales.so2 > promedio_pond_so2) {
+            printf("SUBIENDO");
+        } else {
+            printf("BAJANDO");
+        }
+        printf(" (%.1f%%)\n", porc_so2);
         
         // Análisis NO2
         float dif_no2 = zonas[zona_seleccionada].niveles_actuales.no2 - promedio_pond_no2;
-        float porc_no2 = (promedio_pond_no2 != 0) ? absoluto(dif_no2 / promedio_pond_no2 * 100) : 0;
-        printf("NO2 (ug/m3)      | %-8.1f | %-7.1f | %-10.1f | %s (%.1f%%)\n", 
-               promedio_pond_no2, zonas[zona_seleccionada].niveles_actuales.no2, dif_no2,
-               (zonas[zona_seleccionada].niveles_actuales.no2 > promedio_pond_no2) ? "SUBIENDO" : "BAJANDO", porc_no2);
+        float porc_no2 = 0;
+        if(promedio_pond_no2 != 0) {
+            porc_no2 = absoluto(dif_no2 / promedio_pond_no2 * 100);
+        }
+        
+        printf("NO2 (ug/m3)\t| %.1f\t| %.1f\t| %.1f\t| ", 
+               promedio_pond_no2, zonas[zona_seleccionada].niveles_actuales.no2, dif_no2);
+        
+        if(zonas[zona_seleccionada].niveles_actuales.no2 > promedio_pond_no2) {
+            printf("SUBIENDO");
+        } else {
+            printf("BAJANDO");
+        }
+        printf(" (%.1f%%)\n", porc_no2);
         
         // Análisis PM2.5
         float dif_pm25 = zonas[zona_seleccionada].niveles_actuales.pm25 - promedio_pond_pm25;
-        float porc_pm25 = (promedio_pond_pm25 != 0) ? absoluto(dif_pm25 / promedio_pond_pm25 * 100) : 0;
-        printf("PM2.5 (ug/m3)    | %-8.1f | %-7.1f | %-10.1f | %s (%.1f%%)\n", 
-               promedio_pond_pm25, zonas[zona_seleccionada].niveles_actuales.pm25, dif_pm25,
-               (zonas[zona_seleccionada].niveles_actuales.pm25 > promedio_pond_pm25) ? "SUBIENDO" : "BAJANDO", porc_pm25);
+        float porc_pm25 = 0;
+        if(promedio_pond_pm25 != 0) {
+            porc_pm25 = absoluto(dif_pm25 / promedio_pond_pm25 * 100);
+        }
+        
+        printf("PM2.5 (ug/m3)\t| %.1f\t| %.1f\t| %.1f\t| ", 
+               promedio_pond_pm25, zonas[zona_seleccionada].niveles_actuales.pm25, dif_pm25);
+        
+        if(zonas[zona_seleccionada].niveles_actuales.pm25 > promedio_pond_pm25) {
+            printf("SUBIENDO");
+        } else {
+            printf("BAJANDO");
+        }
+        printf(" (%.1f%%)\n", porc_pm25);
     }
     
     if(zonas[zona_seleccionada].dias_registrados >= 3) {
@@ -877,11 +942,14 @@ void prediccionContaminacion24h(ZonaUrbana zonas[]) {
     pred_no2 = calcularPrediccion(hist_no2, zona->dias_registrados);
     pred_pm25 = calcularPrediccion(hist_pm25, zona->dias_registrados);
     
-    // Ajustar por condiciones climáticas
-    pred_co2 = ajustarPorClima(pred_co2, zona->clima_actual);
-    pred_so2 = ajustarPorClima(pred_so2, zona->clima_actual);
-    pred_no2 = ajustarPorClima(pred_no2, zona->clima_actual);
-    pred_pm25 = ajustarPorClima(pred_pm25, zona->clima_actual);
+    // Predecir condiciones climáticas a 24h
+    DatosClimaticos clima_predicho = predecirClima24h(zona);
+    
+    // Ajustar predicciones por condiciones climáticas predichas
+    pred_co2 = ajustarPorClima(pred_co2, clima_predicho);
+    pred_so2 = ajustarPorClima(pred_so2, clima_predicho);
+    pred_no2 = ajustarPorClima(pred_no2, clima_predicho);
+    pred_pm25 = ajustarPorClima(pred_pm25, clima_predicho);
     
     // Mostrar predicciones
     printf("\nPREDICCIONES PARA LAS PROXIMAS 24 HORAS:\n");
@@ -915,13 +983,13 @@ void prediccionContaminacion24h(ZonaUrbana zonas[]) {
     
     printf("\nNIVEL DE ALERTA GENERAL: %s\n", niveles[alerta_general]);
     
-    // Mostrar condiciones climáticas consideradas
-    printf("\nCONDICIONES CLIMATICAS CONSIDERADAS:\n");
+    // Mostrar condiciones climáticas predichas
+    printf("\nCONDICIONES CLIMATICAS PREDICHAS:\n");
     printf("-------------------------------------------------------\n");
-    printf("Temperatura: %.1f°C\n", zona->clima_actual.temperatura);
-    printf("Viento: %.1f km/h\n", zona->clima_actual.velocidad_viento);
-    printf("Humedad: %.1f%%\n", zona->clima_actual.humedad);
-    printf("Presion: %.1f hPa\n", zona->clima_actual.presion_atmosferica);
+    printf("Temperatura:        %.1f°C\n", clima_predicho.temperatura);
+    printf("Viento:             %.1f km/h\n", clima_predicho.velocidad_viento);
+    printf("Humedad:            %.1f%%\n", clima_predicho.humedad);
+    printf("Presion:            %.1f hPa\n", clima_predicho.presion_atmosferica);
     
     // Mostrar recomendaciones
     printf("\nRECOMENDACIONES:\n");
@@ -939,10 +1007,29 @@ void prediccionContaminacion24h(ZonaUrbana zonas[]) {
     // Mostrar probabilidad de exceder límites
     printf("\nPROBABILIDAD DE EXCEDER LIMITES OMS:\n");
     printf("-------------------------------------------------------\n");
-    printf("CO2:   %.1f%%\n", (pred_co2 > LIMITE_CO2_OMS) ? 85.0 : 15.0);
-    printf("SO2:   %.1f%%\n", (pred_so2 > LIMITE_SO2_OMS) ? 80.0 : 20.0);
-    printf("NO2:   %.1f%%\n", (pred_no2 > LIMITE_NO2_OMS) ? 75.0 : 25.0);
-    printf("PM2.5: %.1f%%\n", (pred_pm25 > LIMITE_PM25_OMS) ? 70.0 : 30.0);
+    if(pred_co2 > LIMITE_CO2_OMS) {
+        printf("CO2:   85.0%%\n");
+    } else {
+        printf("CO2:   15.0%%\n");
+    }
+    
+    if(pred_so2 > LIMITE_SO2_OMS) {
+        printf("SO2:   80.0%%\n");
+    } else {
+        printf("SO2:   20.0%%\n");
+    }
+    
+    if(pred_no2 > LIMITE_NO2_OMS) {
+        printf("NO2:   75.0%%\n");
+    } else {
+        printf("NO2:   25.0%%\n");
+    }
+    
+    if(pred_pm25 > LIMITE_PM25_OMS) {
+        printf("PM2.5: 70.0%%\n");
+    } else {
+        printf("PM2.5: 30.0%%\n");
+    }
     
     printf("\n=======================================================\n");
 }
@@ -1029,34 +1116,152 @@ int determinarNivelAlerta(float valor, int tipo_contaminante) {
     }
 }
 
+
+// Función para calcular predicción climática usando promedio ponderado
+float calcularPrediccionClimatica(float *historico_clima, int dias_disponibles) {
+    if(dias_disponibles < 3) return 0.0;
+    
+    float prediccion = 0.0;
+    
+    // Usar la misma lógica de promedio ponderado que la contaminación
+    if(dias_disponibles >= 3) {
+        // Días más recientes tienen más peso
+        prediccion = historico_clima[dias_disponibles-1] * PESO_DIA_1;  // Día más reciente
+        prediccion += historico_clima[dias_disponibles-2] * PESO_DIA_2; // Segundo día
+        prediccion += historico_clima[dias_disponibles-3] * PESO_DIA_3; // Tercer día
+        
+        // Si hay más días, usar el peso restante distribuido
+        if(dias_disponibles > 3) {
+            float suma_resto = 0.0;
+            for(int i = 0; i < dias_disponibles - 3; i++) {
+                suma_resto += historico_clima[i];
+            }
+            prediccion += (suma_resto / (dias_disponibles - 3)) * PESO_RESTO;
+        }
+    }
+    
+    return prediccion;
+}
+
+// Función principal para predecir clima a 24h
+DatosClimaticos predecirClima24h(ZonaUrbana *zona) {
+    DatosClimaticos clima_predicho;
+    
+    // Generar datos históricos climáticos consistentes basados en el clima actual
+    // Usar variaciones determinísticas basadas en el índice del día
+    float hist_temperatura[MAX_DIAS_HISTORICOS];
+    float hist_viento[MAX_DIAS_HISTORICOS];
+    float hist_humedad[MAX_DIAS_HISTORICOS];
+    float hist_presion[MAX_DIAS_HISTORICOS];
+    
+    // Generar histórico climático de forma determinística
+    // Usar el día como semilla para variaciones consistentes
+    for(int i = 0; i < zona->dias_registrados; i++) {
+        // Variación basada en el índice del día (sin aleatoriedad)
+        float factor_dia = (float)(i % 7) / 7.0; // Ciclo semanal
+        float variacion_temp = (factor_dia - 0.5) * 6.0; // ±3°C
+        float variacion_viento = (factor_dia - 0.5) * 10.0; // ±5 km/h
+        float variacion_humedad = (factor_dia - 0.5) * 20.0; // ±10%
+        float variacion_presion = (factor_dia - 0.5) * 20.0; // ±10 hPa
+        
+        // Aplicar variaciones estacionales determinísticas
+        float factor_estacional = (float)((i % 30) / 30.0); // Ciclo mensual
+        variacion_temp += (factor_estacional - 0.5) * 4.0; // Variación estacional
+        
+        // Calcular valores históricos
+        hist_temperatura[i] = zona->clima_actual.temperatura + variacion_temp;
+        hist_viento[i] = zona->clima_actual.velocidad_viento + variacion_viento;
+        hist_humedad[i] = zona->clima_actual.humedad + variacion_humedad;
+        hist_presion[i] = zona->clima_actual.presion_atmosferica + variacion_presion;
+        
+        // Validar rangos durante la generación
+        if(hist_temperatura[i] < -20.0) hist_temperatura[i] = -20.0;
+        if(hist_temperatura[i] > 50.0) hist_temperatura[i] = 50.0;
+        if(hist_viento[i] < 0.0) hist_viento[i] = 0.0;
+        if(hist_viento[i] > 120.0) hist_viento[i] = 120.0;
+        if(hist_humedad[i] < 0.0) hist_humedad[i] = 0.0;
+        if(hist_humedad[i] > 100.0) hist_humedad[i] = 100.0;
+        if(hist_presion[i] < 900.0) hist_presion[i] = 900.0;
+        if(hist_presion[i] > 1100.0) hist_presion[i] = 1100.0;
+    }
+    
+    // Calcular predicciones usando promedio ponderado - MISMA LÓGICA QUE CONTAMINANTES
+    clima_predicho.temperatura = calcularPrediccionClimatica(hist_temperatura, zona->dias_registrados);
+    clima_predicho.velocidad_viento = calcularPrediccionClimatica(hist_viento, zona->dias_registrados);
+    clima_predicho.humedad = calcularPrediccionClimatica(hist_humedad, zona->dias_registrados);
+    clima_predicho.presion_atmosferica = calcularPrediccionClimatica(hist_presion, zona->dias_registrados);
+    
+    // Validar rangos finales de las predicciones
+    if(clima_predicho.temperatura < -20.0) clima_predicho.temperatura = -20.0;
+    if(clima_predicho.temperatura > 50.0) clima_predicho.temperatura = 50.0;
+    if(clima_predicho.velocidad_viento < 0.0) clima_predicho.velocidad_viento = 0.0;
+    if(clima_predicho.velocidad_viento > 120.0) clima_predicho.velocidad_viento = 120.0;
+    if(clima_predicho.humedad < 0.0) clima_predicho.humedad = 0.0;
+    if(clima_predicho.humedad > 100.0) clima_predicho.humedad = 100.0;
+    if(clima_predicho.presion_atmosferica < 900.0) clima_predicho.presion_atmosferica = 900.0;
+    if(clima_predicho.presion_atmosferica > 1100.0) clima_predicho.presion_atmosferica = 1100.0;
+    
+    return clima_predicho;
+}
+
 // Función auxiliar para mostrar recomendaciones según nivel de alerta
 void mostrarRecomendaciones(int nivel_alerta, char *contaminante) {
     switch(nivel_alerta) {
         case ALERTA_VERDE:
-            printf("> Condiciones normales\n");
+            printf("> Condiciones normales - Calidad del aire buena\n");
             printf("> Actividades al aire libre sin restricciones\n");
+            printf("> Ideal para ejercicio y deportes al exterior\n");
             printf("> Mantener monitoreo regular\n");
+            printf("> Ventilar espacios cerrados normalmente\n");
             break;
             
         case ALERTA_AMARILLA:
-            printf("> Personas sensibles deben limitar actividades al aire libre\n");
+            printf("> Personas sensibles deben limitar actividades prolongadas al aire libre\n");
+            printf("> Reducir ejercicio intenso en exteriores\n");
             printf("> Preferir transporte publico o bicicleta\n");
             printf("> Ventilar espacios cerrados en horas de menor contaminacion\n");
+            printf("> Grupos vulnerables: ninos, ancianos y personas con asma deben tomar precauciones\n");
             break;
             
         case ALERTA_NARANJA:
             printf("> Evitar actividades fisicas intensas al aire libre\n");
-            printf("> Usar mascarilla si es necesario salir\n");
-            printf("> Mantener ventanas cerradas\n");
+            printf("> Usar mascarilla si es necesario salir por periodos prolongados\n");
+            printf("> Mantener ventanas cerradas durante el dia\n");
             printf("> Personas con problemas respiratorios deben evitar exposicion\n");
+            printf("> Postponer actividades deportivas al exterior\n");
+            printf("> Usar purificadores de aire en espacios cerrados\n");
             break;
             
         case ALERTA_ROJA:
-            printf("> EVITAR SALIR SI ES POSIBLE\n");
-            printf("> Usar mascarilla obligatoriamente al salir\n");
+            printf("> EVITAR SALIR SI ES POSIBLE - PERMANECER EN INTERIORES\n");
+            printf("> Usar mascarilla N95 obligatoriamente al salir\n");
             printf("> Mantener espacios cerrados y filtrar el aire\n");
             printf("> Personas vulnerables deben quedarse en casa\n");
-            printf("> Contactar servicios medicos si hay sintomas\n");
+            printf("> Contactar servicios medicos si hay sintomas respiratorios\n");
+            printf("> Suspender todas las actividades al aire libre\n");
+            printf("> Considerar evacuar a zonas con mejor calidad del aire\n");
+            break;
+    }
+    
+    // Recomendaciones adicionales generales
+    printf("\nRECOMENDACIONES ADICIONALES:\n");
+    switch(nivel_alerta) {
+        case ALERTA_VERDE:
+            printf("- Aprovechar para actividades al aire libre\n");
+            printf("- Mantener rutinas normales de ejercicio\n");
+            break;
+        case ALERTA_AMARILLA:
+            printf("- Revisar pronostico antes de planificar actividades\n");
+            printf("- Tener medicamentos para asma a la mano\n");
+            break;
+        case ALERTA_NARANJA:
+            printf("- Informar a grupos vulnerables sobre riesgos\n");
+            printf("- Evitar areas de trafico pesado\n");
+            break;
+        case ALERTA_ROJA:
+            printf("- Contactar autoridades de salud publica\n");
+            printf("- Activar protocolos de emergencia ambiental\n");
             break;
     }
 }
+
