@@ -99,6 +99,9 @@ typedef struct {
 void leerCadena(char *cadena, int num);
 int menu();
 
+// Permite modificar datos históricos de contaminantes y clima para una zona y día específico
+void corregirDatosIngresados(ZonaUrbana zonas[]);
+
 // Funciones de inicialización
 void inicializarZonas(ZonaUrbana zonas[]);
 

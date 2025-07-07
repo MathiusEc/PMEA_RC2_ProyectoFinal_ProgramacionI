@@ -80,8 +80,10 @@ int main(int argc, char *argv[]) {
                 prediccionContaminacion24h(zonas);
                 break;
                 
+
             case 5:
-                // Gestión de datos
+                // Gestión de datos: Corrección de datos ingresados
+                corregirDatosIngresados(zonas);
                 break;
             
             case 6:

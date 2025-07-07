@@ -1,3 +1,4 @@
+
 /*
  Proyecto: Sistema Integral de Gestión y Predicción de Contaminación del Aire en Zonas Urbanas
  
@@ -545,65 +546,57 @@ void mostrarTendenciasHistorico(ZonaUrbana zonas[]) {
     printf("\n=== ANALISIS DE TENDENCIAS: %s ===\n", zonas[zona_seleccionada].nombre);
     printf("========================================================\n");
     
-    // 1. GRÁFICO DE TENDENCIAS (ASCII)
-    printf("\n1. GRAFICOS DE TENDENCIAS (ultimos %d dias):\n", 
-           zonas[zona_seleccionada].dias_registrados);
+    // 1. HISTORIAL DETALLADO DE DATOS
+    printf("\n1. HISTORIAL DETALLADO DE CONTAMINANTES:\n");
     printf("------------------------------------------------------\n");
     
-    // Gráfico de CO2
-    printf("\nCO2 (ppm) - Limite OMS: %.1f\n", LIMITE_CO2_OMS);
-    printf("Dia  | Valor  | Grafico\n");
-    printf("-----|--------|");
-    for(int i = 0; i < 40; i++) printf("-");
-    printf("\n");
+    printf("Dia  | CO2    | SO2    | NO2    | PM2.5  | Estado General\n");
+    printf("-----|--------|--------|--------|--------|---------------\n");
     
-    int dias_grafico;
+    int dias_mostrar;
     if(zonas[zona_seleccionada].dias_registrados > 10) {
-        dias_grafico = 10;
+        dias_mostrar = 10;
     } else {
-        dias_grafico = zonas[zona_seleccionada].dias_registrados;
+        dias_mostrar = zonas[zona_seleccionada].dias_registrados;
     }
     
-    for(int i = 0; i < dias_grafico; i++) {
-        printf("%4d | %6.1f | ", i+1, zonas[zona_seleccionada].historico[i].co2);
+    for(int i = 0; i < dias_mostrar; i++) {
+        // Contar excesos para determinar estado
+        int excesos = 0;
+        if(zonas[zona_seleccionada].historico[i].co2 > LIMITE_CO2_OMS) excesos++;
+        if(zonas[zona_seleccionada].historico[i].so2 > LIMITE_SO2_OMS) excesos++;
+        if(zonas[zona_seleccionada].historico[i].no2 > LIMITE_NO2_OMS) excesos++;
+        if(zonas[zona_seleccionada].historico[i].pm25 > LIMITE_PM25_OMS) excesos++;
         
-        // Crear gráfico ASCII
-        int barras = (int)(zonas[zona_seleccionada].historico[i].co2 / LIMITE_CO2_OMS * 20);
-        if(barras > 40) barras = 40;
-        if(barras < 0) barras = 0;
-        
-        for(int j = 0; j < barras; j++) {
-            if(zonas[zona_seleccionada].historico[i].co2 > LIMITE_CO2_OMS) {
-                printf("█"); // Excede límite
-            } else {
-                printf("▓"); // Normal
-            }
+        char estado[16];
+        if(excesos == 0) {
+            strcpy(estado, "Bueno");
+        } else if(excesos <= 1) {
+            strcpy(estado, "Moderado");
+        } else if(excesos <= 2) {
+            strcpy(estado, "Danino");
+        } else {
+            strcpy(estado, "Peligroso");
         }
-        printf(" %.1f\n", zonas[zona_seleccionada].historico[i].co2);
-    }
-    
-    // Gráfico de PM2.5
-    printf("\nPM2.5 (ug/m3) - Limite OMS: %.1f\n", LIMITE_PM25_OMS);
-    printf("Dia  | Valor  | Grafico\n");
-    printf("-----|--------|");
-    for(int i = 0; i < 40; i++) printf("-");
-    printf("\n");
-    
-    for(int i = 0; i < dias_grafico; i++) {
-        printf("%-4d | %-6.1f | ", i+1, zonas[zona_seleccionada].historico[i].pm25);
         
-        int barras = (int)(zonas[zona_seleccionada].historico[i].pm25 / LIMITE_PM25_OMS * 20);
-        if(barras > 40) barras = 40;
-        if(barras < 0) barras = 0;
+        printf("%-4d | %-6.1f | %-6.1f | %-6.1f | %-6.1f | %s",
+               i+1,
+               zonas[zona_seleccionada].historico[i].co2,
+               zonas[zona_seleccionada].historico[i].so2,
+               zonas[zona_seleccionada].historico[i].no2,
+               zonas[zona_seleccionada].historico[i].pm25,
+               estado);
         
-        for(int j = 0; j < barras; j++) {
-            if(zonas[zona_seleccionada].historico[i].pm25 > LIMITE_PM25_OMS) {
-                printf("█");
-            } else {
-                printf("▓");
-            }
+        // Marcar si excede límites OMS
+        if(excesos > 0) {
+            printf(" (");
+            if(zonas[zona_seleccionada].historico[i].co2 > LIMITE_CO2_OMS) printf("CO2 ");
+            if(zonas[zona_seleccionada].historico[i].so2 > LIMITE_SO2_OMS) printf("SO2 ");
+            if(zonas[zona_seleccionada].historico[i].no2 > LIMITE_NO2_OMS) printf("NO2 ");
+            if(zonas[zona_seleccionada].historico[i].pm25 > LIMITE_PM25_OMS) printf("PM2.5 ");
+            printf("exceden)");
         }
-        printf(" %.1f\n", zonas[zona_seleccionada].historico[i].pm25);
+        printf("\n");
     }
     
     // 2. ANÁLISIS ESTADÍSTICO
@@ -1204,7 +1197,6 @@ DatosClimaticos predecirClima24h(ZonaUrbana *zona) {
     return clima_predicho;
 }
 
-// Función auxiliar para mostrar recomendaciones según nivel de alerta
 void mostrarRecomendaciones(int nivel_alerta, char *contaminante) {
     switch(nivel_alerta) {
         case ALERTA_VERDE:
@@ -1263,5 +1255,161 @@ void mostrarRecomendaciones(int nivel_alerta, char *contaminante) {
             printf("- Activar protocolos de emergencia ambiental\n");
             break;
     }
+}
+
+
+// ================= FUNCION DE CORRECCION DE DATOS INGRESADOS =================
+void corregirDatosIngresados(ZonaUrbana zonas[]) {
+    int id_zona, val, dia, tipo, subop;
+    float nuevo_valor;
+    char confirmacion;
+
+    // Mostrar zonas disponibles
+    cargarTodasLasZonas(zonas);
+    printf("\nZONAS DISPONIBLES PARA CORRECCION:\n");
+    for(int i = 0; i < MAX_ZONAS; i++) {
+        printf("%d. %s (%d dias de datos)\n", zonas[i].id_zona, zonas[i].nombre, zonas[i].dias_registrados);
+    }
+
+    // Seleccionar zona
+    do {
+        printf("Seleccione la zona a corregir (1-%d): ", MAX_ZONAS);
+        val = scanf("%d", &id_zona);
+        // Limpiar buffer de entrada
+        fflush(stdin);
+        if(val != 1 || id_zona < 1 || id_zona > MAX_ZONAS) {
+            printf("Opcion invalida. Intente de nuevo.\n");
+        }
+    } while(val != 1 || id_zona < 1 || id_zona > MAX_ZONAS);
+
+    ZonaUrbana *zona = &zonas[id_zona-1];
+    if(zona->dias_registrados == 0) {
+        printf("No hay datos registrados para esta zona.\n");
+        return;
+    }
+
+    // Mostrar días disponibles
+    printf("\nDias disponibles para correccion en %s:\n", zona->nombre);
+    for(int i = 0; i < zona->dias_registrados; i++) {
+        printf("Dia %d: CO2=%.1f, SO2=%.1f, NO2=%.1f, PM2.5=%.1f\n", i+1, zona->historico[i].co2, zona->historico[i].so2, zona->historico[i].no2, zona->historico[i].pm25);
+    }
+
+    // Seleccionar día
+    do {
+        printf("Seleccione el dia a corregir (1-%d): ", zona->dias_registrados);
+        val = scanf("%d", &dia);
+        fflush(stdin);
+        if(val != 1 || dia < 1 || dia > zona->dias_registrados) {
+            printf("Dia invalido. Intente de nuevo.\n");
+        }
+    } while(val != 1 || dia < 1 || dia > zona->dias_registrados);
+    dia--; // índice
+
+    // Elegir tipo de dato a corregir
+    printf("\nSeleccione el tipo de dato a corregir:\n");
+    printf("1. Contaminantes\n");
+    printf("2. Datos climaticos\n");
+    do {
+        printf("Opcion: ");
+        val = scanf("%d", &tipo);
+        fflush(stdin);
+        if(val != 1 || (tipo != 1 && tipo != 2)) {
+            printf("Opcion invalida. Intente de nuevo.\n");
+        }
+    } while(val != 1 || (tipo != 1 && tipo != 2));
+
+    if(tipo == 1) {
+        // Contaminantes
+        printf("\nSeleccione el contaminante a corregir:\n");
+        printf("1. CO2\n2. SO2\n3. NO2\n4. PM2.5\n");
+        do {
+            printf("Opcion: ");
+            val = scanf("%d", &subop);
+            fflush(stdin);
+            if(val != 1 || subop < 1 || subop > 4) {
+                printf("Opcion invalida. Intente de nuevo.\n");
+            }
+        } while(val != 1 || subop < 1 || subop > 4);
+
+        printf("Ingrese el nuevo valor: ");
+        val = scanf("%f", &nuevo_valor);
+        fflush(stdin);
+        if(val != 1) {
+            printf("Valor invalido. Operacion cancelada.\n");
+            return;
+        }
+
+            do {
+                printf("Confirma la correccion? (s/n): ");
+                scanf(" %c", &confirmacion);
+                fflush(stdin);
+                if(confirmacion != 's' && confirmacion != 'S' && confirmacion != 'n' && confirmacion != 'N') {
+                printf("Opcion invalida. Ingrese 's' para si o 'n' para no.\n");
+                }
+            } while(confirmacion != 's' && confirmacion != 'S' && confirmacion != 'n' && confirmacion != 'N');
+
+            if(confirmacion == 'n' || confirmacion == 'N') {
+                printf("Operacion cancelada.\n");
+                return;
+            }
+
+            switch(subop) {
+                case 1: zona->historico[dia].co2 = nuevo_valor; break;
+                case 2: zona->historico[dia].so2 = nuevo_valor; break;
+                case 3: zona->historico[dia].no2 = nuevo_valor; break;
+                case 4: zona->historico[dia].pm25 = nuevo_valor; break;
+            }
+            // Si es el día más reciente, actualizar niveles actuales
+            if(dia == 0) {
+                zona->niveles_actuales = zona->historico[0];
+            }
+            printf("Dato corregido exitosamente.\n");
+            } else {
+            // Datos climáticos
+            printf("\nSeleccione el dato climatico a corregir:\n");
+            printf("1. Temperatura\n2. Velocidad del viento\n3. Humedad\n4. Presion atmosferica\n");
+            do {
+                printf("Opcion: ");
+                val = scanf("%d", &subop);
+                fflush(stdin);
+                if(val != 1 || subop < 1 || subop > 4) {
+                printf("Opcion invalida. Intente de nuevo.\n");
+                }
+            } while(val != 1 || subop < 1 || subop > 4);
+
+            printf("Ingrese el nuevo valor: ");
+            val = scanf("%f", &nuevo_valor);
+            fflush(stdin);
+            if(val != 1) {
+                printf("Valor invalido. Operacion cancelada.\n");
+                return;
+            }
+
+            do {
+                printf("Confirma la correccion? (s/n): ");
+                scanf(" %c", &confirmacion);
+                fflush(stdin);
+                if(confirmacion != 's' && confirmacion != 'S' && confirmacion != 'n' && confirmacion != 'N') {
+                printf("Opcion invalida. Ingrese 's' para si o 'n' para no.\n");
+                }
+            } while(confirmacion != 's' && confirmacion != 'S' && confirmacion != 'n' && confirmacion != 'N');
+
+            if(confirmacion == 'n' || confirmacion == 'N') {
+                printf("Operacion cancelada.\n");
+                return;
+            }
+
+
+        switch(subop) {
+            case 1: zona->clima_actual.temperatura = nuevo_valor; break;
+            case 2: zona->clima_actual.velocidad_viento = nuevo_valor; break;
+            case 3: zona->clima_actual.humedad = nuevo_valor; break;
+            case 4: zona->clima_actual.presion_atmosferica = nuevo_valor; break;
+        }
+        printf("Dato climatico corregido exitosamente.\n");
+    }
+
+    // Guardar zona actualizada
+    guardarZona(zona);
 }
 
