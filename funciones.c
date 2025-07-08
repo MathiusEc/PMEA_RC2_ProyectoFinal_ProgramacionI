@@ -1,4 +1,3 @@
-
 /*
  Proyecto: Sistema Integral de Gestión y Predicción de Contaminación del Aire en Zonas Urbanas
  
@@ -195,6 +194,24 @@ int cargarTodasLasZonas(ZonaUrbana zonas[]) {
     return zonas_cargadas;
 }
 
+// ================= FUNCION DE VALIDACION DE DATOS =================
+void funcionValidarDatosdeRegistro(float *valor, char *nombre_dato, float min_val, float max_val) {
+    int val;
+    do {
+        printf("%s: ", nombre_dato);
+        fflush(stdin);
+        val = scanf("%f", valor);
+        fflush(stdin);
+        
+        if(val != 1) {
+            printf("ERROR: Ingrese un numero valido.\n");
+        } else if(*valor < min_val || *valor > max_val) {
+            printf("ERROR: El valor debe estar entre %.1f y %.1f\n", min_val, max_val);
+        }
+    } while(val != 1 || *valor < min_val || *valor > max_val);
+}
+
+// ================= FUNCION DE REGISTRO DIARIO =================
 void registroDatosDiario(ZonaUrbana zonas[]) {
     int id_zona, val;
     // Mostrar zonas disponibles
@@ -219,27 +236,36 @@ void registroDatosDiario(ZonaUrbana zonas[]) {
         zonas[id_zona - 1].historico[i] = zonas[id_zona - 1].historico[i-1];
     }
 
-    // Leer nuevos datos
+    // Leer nuevos datos con validación
     printf("Ingrese los niveles de contaminantes para la zona %s:\n", zonas[id_zona - 1].nombre);
-    printf("CO2 (ppm): ");
-    scanf("%f", &zonas[id_zona - 1].niveles_actuales.co2);
-    printf("SO2 (ug/m3): ");
-    scanf("%f", &zonas[id_zona - 1].niveles_actuales.so2);
-    printf("NO2 (ug/m3): ");
-    scanf("%f", &zonas[id_zona - 1].niveles_actuales.no2);
-    printf("PM2.5 (ug/m3): ");
-    scanf("%f", &zonas[id_zona - 1].niveles_actuales.pm25);
+    
+    // Validar datos de contaminantes con rangos específicos
+    funcionValidarDatosdeRegistro(&zonas[id_zona - 1].niveles_actuales.co2, 
+                                 "CO2 (ppm)", 0.0, 1000.0);
+    
+    funcionValidarDatosdeRegistro(&zonas[id_zona - 1].niveles_actuales.so2, 
+                                 "SO2 (ug/m3)", 0.0, 500.0);
+    
+    funcionValidarDatosdeRegistro(&zonas[id_zona - 1].niveles_actuales.no2, 
+                                 "NO2 (ug/m3)", 0.0, 300.0);
+    
+    funcionValidarDatosdeRegistro(&zonas[id_zona - 1].niveles_actuales.pm25, 
+                                 "PM2.5 (ug/m3)", 0.0, 200.0);
 
-    // Registrar datos climáticos
-    printf("Ingrese los datos climaticos para la zona %s:\n", zonas[id_zona - 1].nombre);
-    printf("Temperatura (Celsius): ");
-    scanf("%f", &zonas[id_zona - 1].clima_actual.temperatura);
-    printf("Velocidad del viento (km/h): ");
-    scanf("%f", &zonas[id_zona - 1].clima_actual.velocidad_viento);
-    printf("Humedad (%%): ");
-    scanf("%f", &zonas[id_zona - 1].clima_actual.humedad);
-    printf("Presion (hPa): ");
-    scanf("%f", &zonas[id_zona - 1].clima_actual.presion_atmosferica);
+    // Registrar datos climáticos con validación
+    printf("\nIngrese los datos climaticos para la zona %s:\n", zonas[id_zona - 1].nombre);
+    
+    funcionValidarDatosdeRegistro(&zonas[id_zona - 1].clima_actual.temperatura, 
+                                 "Temperatura (Celsius)", -20.0, 50.0);
+    
+    funcionValidarDatosdeRegistro(&zonas[id_zona - 1].clima_actual.velocidad_viento, 
+                                 "Velocidad del viento (km/h)", 0.0, 120.0);
+    
+    funcionValidarDatosdeRegistro(&zonas[id_zona - 1].clima_actual.humedad, 
+                                 "Humedad (%)", 0.0, 100.0);
+    
+    funcionValidarDatosdeRegistro(&zonas[id_zona - 1].clima_actual.presion_atmosferica, 
+                                 "Presion (hPa)", 900.0, 1100.0);
 
     // Actualizar niveles actuales
     zonas[id_zona - 1].historico[0] = zonas[id_zona - 1].niveles_actuales;
@@ -719,11 +745,11 @@ void mostrarTendenciasHistorico(ZonaUrbana zonas[]) {
                promedio_pond_co2, zonas[zona_seleccionada].niveles_actuales.co2, dif_co2);
         
         if(zonas[zona_seleccionada].niveles_actuales.co2 > promedio_pond_co2) {
-            printf("SUBIENDO");
+            printf("SUBIENDO ");
         } else {
-            printf("BAJANDO");
+            printf("BAJANDO  ");
         }
-        printf(" (%.1f%%)\n", porc_co2);
+        printf("(%.1f%%)\n", porc_co2);
         
         // Análisis SO2
         float dif_so2 = zonas[zona_seleccionada].niveles_actuales.so2 - promedio_pond_so2;
@@ -736,11 +762,11 @@ void mostrarTendenciasHistorico(ZonaUrbana zonas[]) {
                promedio_pond_so2, zonas[zona_seleccionada].niveles_actuales.so2, dif_so2);
         
         if(zonas[zona_seleccionada].niveles_actuales.so2 > promedio_pond_so2) {
-            printf("SUBIENDO");
+            printf("SUBIENDO ");
         } else {
-            printf("BAJANDO");
+            printf("BAJANDO  ");
         }
-        printf(" (%.1f%%)\n", porc_so2);
+        printf("(%.1f%%)\n", porc_so2);
         
         // Análisis NO2
         float dif_no2 = zonas[zona_seleccionada].niveles_actuales.no2 - promedio_pond_no2;
@@ -753,11 +779,11 @@ void mostrarTendenciasHistorico(ZonaUrbana zonas[]) {
                promedio_pond_no2, zonas[zona_seleccionada].niveles_actuales.no2, dif_no2);
         
         if(zonas[zona_seleccionada].niveles_actuales.no2 > promedio_pond_no2) {
-            printf("SUBIENDO");
+            printf("SUBIENDO ");
         } else {
-            printf("BAJANDO");
+            printf("BAJANDO  ");
         }
-        printf(" (%.1f%%)\n", porc_no2);
+        printf("(%.1f%%)\n", porc_no2);
         
         // Análisis PM2.5
         float dif_pm25 = zonas[zona_seleccionada].niveles_actuales.pm25 - promedio_pond_pm25;
@@ -770,9 +796,9 @@ void mostrarTendenciasHistorico(ZonaUrbana zonas[]) {
                promedio_pond_pm25, zonas[zona_seleccionada].niveles_actuales.pm25, dif_pm25);
         
         if(zonas[zona_seleccionada].niveles_actuales.pm25 > promedio_pond_pm25) {
-            printf("SUBIENDO");
+            printf("SUBIENDO ");
         } else {
-            printf("BAJANDO");
+            printf("BAJANDO  ");
         }
         printf(" (%.1f%%)\n", porc_pm25);
     }
@@ -1256,7 +1282,6 @@ void mostrarRecomendaciones(int nivel_alerta, char *contaminante) {
             break;
     }
 }
-
 
 // ================= FUNCION DE CORRECCION DE DATOS INGRESADOS =================
 void corregirDatosIngresados(ZonaUrbana zonas[]) {

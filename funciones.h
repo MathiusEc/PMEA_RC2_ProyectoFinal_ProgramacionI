@@ -74,6 +74,9 @@ typedef struct {
 void leerCadena(char *cadena, int num);
 int menu();
 
+// Función para validar datos de entrada con rangos específicos
+void funcionValidarDatosdeRegistro(float *valor, char *nombre_dato, float min_val, float max_val);
+
 // Permite modificar datos históricos de contaminantes y clima para una zona y día específico
 void corregirDatosIngresados(ZonaUrbana zonas[]);
 
