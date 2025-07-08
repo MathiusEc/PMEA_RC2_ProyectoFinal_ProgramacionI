@@ -705,8 +705,8 @@ void mostrarTendenciasHistorico(ZonaUrbana zonas[]) {
         promedio_pond_pm25 /= dias_para_promedio;
         
         printf("PROMEDIO ULTIMOS %d DIAS vs NIVEL ACTUAL:\n", dias_para_promedio);
-        printf("                 | Promedio | Actual  | Diferencia | Tendencia\n");
-        printf("-----------------|----------|---------|------------|----------\n");
+        printf("Contaminante\t| Promedio\t| Actual\t| Diferencia\t| Tendencia\n");
+        printf("----------------|---------------|---------------|---------------|----------\n");
         
         // Análisis CO2
         float dif_co2 = zonas[zona_seleccionada].niveles_actuales.co2 - promedio_pond_co2;
@@ -715,7 +715,7 @@ void mostrarTendenciasHistorico(ZonaUrbana zonas[]) {
             porc_co2 = absoluto(dif_co2 / promedio_pond_co2 * 100);
         }
         
-        printf("CO2 (ppm)\t| %.1f\t| %.1f\t| %.1f\t| ", 
+        printf("CO2 (ppm)\t| %.1f\t\t| %.1f\t\t| %.1f\t\t| ", 
                promedio_pond_co2, zonas[zona_seleccionada].niveles_actuales.co2, dif_co2);
         
         if(zonas[zona_seleccionada].niveles_actuales.co2 > promedio_pond_co2) {
@@ -732,7 +732,7 @@ void mostrarTendenciasHistorico(ZonaUrbana zonas[]) {
             porc_so2 = absoluto(dif_so2 / promedio_pond_so2 * 100);
         }
         
-        printf("SO2 (ug/m3)\t| %.1f\t| %.1f\t| %.1f\t| ", 
+        printf("SO2 (ug/m3)\t| %.1f\t\t| %.1f\t\t| %.1f\t\t| ", 
                promedio_pond_so2, zonas[zona_seleccionada].niveles_actuales.so2, dif_so2);
         
         if(zonas[zona_seleccionada].niveles_actuales.so2 > promedio_pond_so2) {
@@ -749,7 +749,7 @@ void mostrarTendenciasHistorico(ZonaUrbana zonas[]) {
             porc_no2 = absoluto(dif_no2 / promedio_pond_no2 * 100);
         }
         
-        printf("NO2 (ug/m3)\t| %.1f\t| %.1f\t| %.1f\t| ", 
+        printf("NO2 (ug/m3)\t| %.1f\t\t| %.1f\t\t| %.1f\t\t| ", 
                promedio_pond_no2, zonas[zona_seleccionada].niveles_actuales.no2, dif_no2);
         
         if(zonas[zona_seleccionada].niveles_actuales.no2 > promedio_pond_no2) {
@@ -766,7 +766,7 @@ void mostrarTendenciasHistorico(ZonaUrbana zonas[]) {
             porc_pm25 = absoluto(dif_pm25 / promedio_pond_pm25 * 100);
         }
         
-        printf("PM2.5 (ug/m3)\t| %.1f\t| %.1f\t| %.1f\t| ", 
+        printf("PM2.5 (ug/m3)\t| %.1f\t\t| %.1f\t\t| %.1f\t\t| ", 
                promedio_pond_pm25, zonas[zona_seleccionada].niveles_actuales.pm25, dif_pm25);
         
         if(zonas[zona_seleccionada].niveles_actuales.pm25 > promedio_pond_pm25) {
