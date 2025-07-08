@@ -65,32 +65,40 @@ int main(int argc, char *argv[]) {
         
         switch(opcion) {
             case 1:
+                printf("\n");
                 registroDatosDiario(zonas);
                 break;
                 
             case 2:
+                printf("\n");
                 monitoreoDetalladoPorZona(zonas);
                 break;
                 
             case 3:
+                printf("\n");
                 mostrarTendenciasHistorico(zonas);
                 break;
                 
             case 4:
+                printf("\n");
                 prediccionContaminacion24h(zonas);
                 break;
                 
 
             case 5:
+                printf("\n");
                 // Gestión de datos: Corrección de datos ingresados
                 corregirDatosIngresados(zonas);
                 break;
             
             case 6:
+                printf("\n");
                 mostrarEstadoSistema(zonas);
                 break;
                 
             case 0:
+                printf("\n");
+                printf("\n");
                 printf("\n=== SALIENDO DEL SISTEMA ===\n");
                 printf("Guardando datos antes de salir...\n");
                 guardarTodasLasZonas(zonas);
