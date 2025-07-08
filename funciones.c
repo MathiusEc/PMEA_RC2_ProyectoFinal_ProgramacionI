@@ -915,9 +915,17 @@ void prediccionContaminacion24h(ZonaUrbana zonas[]) {
         }
     }
     
+    int val;
     do {
         printf("\nSeleccione una zona (1-5): ");
-        scanf("%d", &zona_seleccionada);
+        val = scanf("%d", &zona_seleccionada);
+        fflush(stdin);
+        
+        if(val != 1) {
+            printf("ERROR: Ingrese un numero valido.\n");
+            continue;
+        }
+        
         zona_seleccionada--; // Ajustar a índice del array
         
         if(zona_seleccionada < 0 || zona_seleccionada >= MAX_ZONAS) {
@@ -1356,39 +1364,49 @@ void corregirDatosIngresados(ZonaUrbana zonas[]) {
             }
         } while(val != 1 || subop < 1 || subop > 4);
 
-        printf("Ingrese el nuevo valor: ");
-        val = scanf("%f", &nuevo_valor);
-        fflush(stdin);
-        if(val != 1) {
-            printf("Valor invalido. Operacion cancelada.\n");
+        // Mostrar valor actual
+        printf("Valor actual: ");
+        switch(subop) {
+            case 1: printf("%.1f ppm\n", zona->historico[dia].co2); break;
+            case 2: printf("%.1f ug/m3\n", zona->historico[dia].so2); break;
+            case 3: printf("%.1f ug/m3\n", zona->historico[dia].no2); break;
+            case 4: printf("%.1f ug/m3\n", zona->historico[dia].pm25); break;
+        }
+
+        // Usar función de validación con rangos apropiados
+        char *nombres_contaminantes[] = {"CO2 (ppm)", "SO2 (ug/m3)", "NO2 (ug/m3)", "PM2.5 (ug/m3)"};
+        float rangos_min[] = {0.0, 0.0, 0.0, 0.0};
+        float rangos_max[] = {1000.0, 500.0, 300.0, 200.0};
+        
+        printf("Ingrese el nuevo valor:\n");
+        funcionValidarDatosdeRegistro(&nuevo_valor, nombres_contaminantes[subop-1], 
+                                     rangos_min[subop-1], rangos_max[subop-1]);
+
+        do {
+            printf("Confirma la correccion? (s/n): ");
+            scanf(" %c", &confirmacion);
+            fflush(stdin);
+            if(confirmacion != 's' && confirmacion != 'S' && confirmacion != 'n' && confirmacion != 'N') {
+            printf("Opcion invalida. Ingrese 's' para si o 'n' para no.\n");
+            }
+        } while(confirmacion != 's' && confirmacion != 'S' && confirmacion != 'n' && confirmacion != 'N');
+
+        if(confirmacion == 'n' || confirmacion == 'N') {
+            printf("Operacion cancelada.\n");
             return;
         }
 
-            do {
-                printf("Confirma la correccion? (s/n): ");
-                scanf(" %c", &confirmacion);
-                fflush(stdin);
-                if(confirmacion != 's' && confirmacion != 'S' && confirmacion != 'n' && confirmacion != 'N') {
-                printf("Opcion invalida. Ingrese 's' para si o 'n' para no.\n");
-                }
-            } while(confirmacion != 's' && confirmacion != 'S' && confirmacion != 'n' && confirmacion != 'N');
-
-            if(confirmacion == 'n' || confirmacion == 'N') {
-                printf("Operacion cancelada.\n");
-                return;
-            }
-
-            switch(subop) {
-                case 1: zona->historico[dia].co2 = nuevo_valor; break;
-                case 2: zona->historico[dia].so2 = nuevo_valor; break;
-                case 3: zona->historico[dia].no2 = nuevo_valor; break;
-                case 4: zona->historico[dia].pm25 = nuevo_valor; break;
-            }
-            // Si es el día más reciente, actualizar niveles actuales
-            if(dia == 0) {
-                zona->niveles_actuales = zona->historico[0];
-            }
-            printf("Dato corregido exitosamente.\n");
+        switch(subop) {
+            case 1: zona->historico[dia].co2 = nuevo_valor; break;
+            case 2: zona->historico[dia].so2 = nuevo_valor; break;
+            case 3: zona->historico[dia].no2 = nuevo_valor; break;
+            case 4: zona->historico[dia].pm25 = nuevo_valor; break;
+        }
+        // Si es el día más reciente, actualizar niveles actuales
+        if(dia == 0) {
+            zona->niveles_actuales = zona->historico[0];
+        }
+        printf("Dato corregido exitosamente.\n");
             } else {
             // Datos climáticos
             printf("\nSeleccione el dato climatico a corregir:\n");
@@ -1402,13 +1420,24 @@ void corregirDatosIngresados(ZonaUrbana zonas[]) {
                 }
             } while(val != 1 || subop < 1 || subop > 4);
 
-            printf("Ingrese el nuevo valor: ");
-            val = scanf("%f", &nuevo_valor);
-            fflush(stdin);
-            if(val != 1) {
-                printf("Valor invalido. Operacion cancelada.\n");
-                return;
+            // Mostrar valor actual
+            printf("Valor actual: ");
+            switch(subop) {
+                case 1: printf("%.1f C\n", zona->clima_actual.temperatura); break;
+                case 2: printf("%.1f km/h\n", zona->clima_actual.velocidad_viento); break;
+                case 3: printf("%.1f%%\n", zona->clima_actual.humedad); break;
+                case 4: printf("%.1f hPa\n", zona->clima_actual.presion_atmosferica); break;
             }
+
+            // Usar función de validación con rangos apropiados para datos climáticos
+            char *nombres_clima[] = {"Temperatura (Celsius)", "Velocidad del viento (km/h)", 
+                                    "Humedad (%)", "Presion (hPa)"};
+            float rangos_min_clima[] = {-20.0, 0.0, 0.0, 900.0};
+            float rangos_max_clima[] = {50.0, 120.0, 100.0, 1100.0};
+            
+            printf("Ingrese el nuevo valor:\n");
+            funcionValidarDatosdeRegistro(&nuevo_valor, nombres_clima[subop-1], 
+                                         rangos_min_clima[subop-1], rangos_max_clima[subop-1]);
 
             do {
                 printf("Confirma la correccion? (s/n): ");
