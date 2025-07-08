@@ -1,6 +1,6 @@
 #define MAX_ZONAS 5
 #define MAX_DIAS_HISTORICOS 30
-#define MAX_NOMBRE 50
+#define MAX_NOMBRE 50 
 
 // Límites OMS (valores de referencia)
 #define LIMITE_CO2_OMS 400.0     // ppm

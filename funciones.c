@@ -1391,7 +1391,7 @@ void corregirDatosIngresados(ZonaUrbana zonas[]) {
             }
         } while(confirmacion != 's' && confirmacion != 'S' && confirmacion != 'n' && confirmacion != 'N');
 
-        if(confirmacion == 'n' || confirmacion == 'N') {
+        if(confirmacion == 'n' || confirmacion == 'N') {   
             printf("Operacion cancelada.\n");
             return;
         }
