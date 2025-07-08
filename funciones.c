@@ -1291,179 +1291,247 @@ void mostrarRecomendaciones(int nivel_alerta, char *contaminante) {
     }
 }
 
-// ================= FUNCION DE CORRECCION DE DATOS INGRESADOS =================
+// ================= FUNCION DE CORRECCION DE DATOS INGRESADOS MEJORADA =================
 void corregirDatosIngresados(ZonaUrbana zonas[]) {
-    int id_zona, val, dia, tipo, subop;
-    float nuevo_valor;
-    char confirmacion;
+    int id_zona, val, dia;
+    char continuar_editando = 's';
+    int cambios_realizados = 0;
 
     // Mostrar zonas disponibles
     cargarTodasLasZonas(zonas);
-    printf("\nZONAS DISPONIBLES PARA CORRECCION:\n");
+    printf("\n=== EDITOR AVANZADO DE DATOS HISTORICOS ===\n");
+    printf("ZONAS DISPONIBLES PARA EDICION:\n");
     for(int i = 0; i < MAX_ZONAS; i++) {
         printf("%d. %s (%d dias de datos)\n", zonas[i].id_zona, zonas[i].nombre, zonas[i].dias_registrados);
     }
 
     // Seleccionar zona
     do {
-        printf("Seleccione la zona a corregir (1-%d): ", MAX_ZONAS);
+        printf("\nSeleccione la zona a editar (1-%d): ", MAX_ZONAS);
         val = scanf("%d", &id_zona);
-        // Limpiar buffer de entrada
         fflush(stdin);
         if(val != 1 || id_zona < 1 || id_zona > MAX_ZONAS) {
-            printf("Opcion invalida. Intente de nuevo.\n");
+            printf("ERROR: Opcion invalida. Intente de nuevo.\n");
         }
     } while(val != 1 || id_zona < 1 || id_zona > MAX_ZONAS);
 
     ZonaUrbana *zona = &zonas[id_zona-1];
     if(zona->dias_registrados == 0) {
-        printf("No hay datos registrados para esta zona.\n");
+        printf("ERROR: No hay datos registrados para esta zona.\n");
         return;
     }
 
-    // Mostrar días disponibles
-    printf("\nDias disponibles para correccion en %s:\n", zona->nombre);
-    for(int i = 0; i < zona->dias_registrados; i++) {
-        printf("Dia %d: CO2=%.1f, SO2=%.1f, NO2=%.1f, PM2.5=%.1f\n", i+1, zona->historico[i].co2, zona->historico[i].so2, zona->historico[i].no2, zona->historico[i].pm25);
-    }
-
-    // Seleccionar día
+    printf("\n=== EDITANDO ZONA: %s ===\n", zona->nombre);
+    
+    // BUCLE PRINCIPAL: SELECCIÓN DE DÍA Y EDICIÓN
     do {
-        printf("Seleccione el dia a corregir (1-%d): ", zona->dias_registrados);
-        val = scanf("%d", &dia);
-        fflush(stdin);
-        if(val != 1 || dia < 1 || dia > zona->dias_registrados) {
-            printf("Dia invalido. Intente de nuevo.\n");
+        // Mostrar días disponibles con vista resumida
+        printf("\nDIAS DISPONIBLES PARA EDICION:\n");
+        printf("=================================================================\n");
+        printf("Dia\tCO2\tSO2\tNO2\tPM2.5\n");
+        printf("-----------------------------------------------------------------\n");
+        for(int i = 0; i < zona->dias_registrados && i < 10; i++) {
+            printf("%d\t%.1f\t%.1f\t%.1f\t%.1f\n", i+1,
+                   zona->historico[i].co2, zona->historico[i].so2, 
+                   zona->historico[i].no2, zona->historico[i].pm25);
         }
-    } while(val != 1 || dia < 1 || dia > zona->dias_registrados);
-    dia--; // índice
-
-    // Elegir tipo de dato a corregir
-    printf("\nSeleccione el tipo de dato a corregir:\n");
-    printf("1. Contaminantes\n");
-    printf("2. Datos climaticos\n");
-    do {
-        printf("Opcion: ");
-        val = scanf("%d", &tipo);
-        fflush(stdin);
-        if(val != 1 || (tipo != 1 && tipo != 2)) {
-            printf("Opcion invalida. Intente de nuevo.\n");
-        }
-    } while(val != 1 || (tipo != 1 && tipo != 2));
-
-    if(tipo == 1) {
-        // Contaminantes
-        printf("\nSeleccione el contaminante a corregir:\n");
-        printf("1. CO2\n2. SO2\n3. NO2\n4. PM2.5\n");
-        do {
-            printf("Opcion: ");
-            val = scanf("%d", &subop);
-            fflush(stdin);
-            if(val != 1 || subop < 1 || subop > 4) {
-                printf("Opcion invalida. Intente de nuevo.\n");
-            }
-        } while(val != 1 || subop < 1 || subop > 4);
-
-        // Mostrar valor actual
-        printf("Valor actual: ");
-        switch(subop) {
-            case 1: printf("%.1f ppm\n", zona->historico[dia].co2); break;
-            case 2: printf("%.1f ug/m3\n", zona->historico[dia].so2); break;
-            case 3: printf("%.1f ug/m3\n", zona->historico[dia].no2); break;
-            case 4: printf("%.1f ug/m3\n", zona->historico[dia].pm25); break;
-        }
-
-        // Usar función de validación con rangos apropiados
-        char *nombres_contaminantes[] = {"CO2 (ppm)", "SO2 (ug/m3)", "NO2 (ug/m3)", "PM2.5 (ug/m3)"};
-        float rangos_min[] = {0.0, 0.0, 0.0, 0.0};
-        float rangos_max[] = {1000.0, 500.0, 300.0, 200.0};
+        printf("=================================================================\n");
         
-        printf("Ingrese el nuevo valor:\n");
-        funcionValidarDatosdeRegistro(&nuevo_valor, nombres_contaminantes[subop-1], 
-                                     rangos_min[subop-1], rangos_max[subop-1]);
+        if(zona->dias_registrados > 10) {
+            printf("(Mostrando primeros 10 dias de %d disponibles)\n", zona->dias_registrados);
+        }
 
+        // Seleccionar día
         do {
-            printf("Confirma la correccion? (s/n): ");
-            scanf(" %c", &confirmacion);
+            printf("Seleccione el dia a editar (1-%d): ", zona->dias_registrados);
+            val = scanf("%d", &dia);
             fflush(stdin);
-            if(confirmacion != 's' && confirmacion != 'S' && confirmacion != 'n' && confirmacion != 'N') {
-            printf("Opcion invalida. Ingrese 's' para si o 'n' para no.\n");
+            if(val != 1 || dia < 1 || dia > zona->dias_registrados) {
+                printf("ERROR: Dia invalido. Intente de nuevo.\n");
             }
-        } while(confirmacion != 's' && confirmacion != 'S' && confirmacion != 'n' && confirmacion != 'N');
+        } while(val != 1 || dia < 1 || dia > zona->dias_registrados);
+        dia--; // convertir a índice
 
-        if(confirmacion == 'n' || confirmacion == 'N') {   
-            printf("Operacion cancelada.\n");
-            return;
-        }
-
-        switch(subop) {
-            case 1: zona->historico[dia].co2 = nuevo_valor; break;
-            case 2: zona->historico[dia].so2 = nuevo_valor; break;
-            case 3: zona->historico[dia].no2 = nuevo_valor; break;
-            case 4: zona->historico[dia].pm25 = nuevo_valor; break;
-        }
-        // Si es el día más reciente, actualizar niveles actuales
-        if(dia == 0) {
-            zona->niveles_actuales = zona->historico[0];
-        }
-        printf("Dato corregido exitosamente.\n");
-            } else {
-            // Datos climáticos
-            printf("\nSeleccione el dato climatico a corregir:\n");
-            printf("1. Temperatura\n2. Velocidad del viento\n3. Humedad\n4. Presion atmosferica\n");
+        // BUCLE DE EDICIÓN MÚLTIPLE PARA EL DÍA SELECCIONADO
+        int cambios_dia = 0;
+        do {
+            int subop;
+            float nuevo_valor;
+            char confirmacion;
+            
+            // Mostrar panel de edición
+            printf("\nEDITOR - DIA %d de %s\n", dia + 1, zona->nombre);
+            printf("=======================================================\n");
+            printf("CONTAMINANTES ACTUALES:\n");
+            printf("  1. CO2:\t%6.1f ppm\n", zona->historico[dia].co2);
+            printf("  2. SO2:\t%6.1f ug/m3\n", zona->historico[dia].so2);
+            printf("  3. NO2:\t%6.1f ug/m3\n", zona->historico[dia].no2);
+            printf("  4. PM2.5:\t%6.1f ug/m3\n", zona->historico[dia].pm25);
+            printf("\nDATOS CLIMATICOS ACTUALES:\n");
+            printf("  5. Temperatura:\t%6.1f C\n", zona->clima_actual.temperatura);
+            printf("  6. Viento:\t\t%6.1f km/h\n", zona->clima_actual.velocidad_viento);
+            printf("  7. Humedad:\t\t%6.1f %%\n", zona->clima_actual.humedad);
+            printf("  8. Presion:\t\t%6.1f hPa\n", zona->clima_actual.presion_atmosferica);
+            printf("=======================================================\n");
+            printf("  9. Edicion rapida (todos los contaminantes)\n");
+            printf("  0. Terminar edicion de este dia\n");
+            
             do {
-                printf("Opcion: ");
+                printf("\nSeleccione el campo a editar (0-9): ");
                 val = scanf("%d", &subop);
                 fflush(stdin);
-                if(val != 1 || subop < 1 || subop > 4) {
-                printf("Opcion invalida. Intente de nuevo.\n");
+                if(val != 1 || subop < 0 || subop > 9) {
+                    printf("ERROR: Opcion invalida. Intente de nuevo.\n");
                 }
-            } while(val != 1 || subop < 1 || subop > 4);
-
-            // Mostrar valor actual
+            } while(val != 1 || subop < 0 || subop > 9);
+            
+            if(subop == 0) {
+                break; // Terminar edición de este día
+            }
+            
+            // Edición rápida de todos los contaminantes
+            if(subop == 9) {
+                printf("\nEDICION RAPIDA - TODOS LOS CONTAMINANTES\n");
+                printf("Valores actuales: CO2=%.1f, SO2=%.1f, NO2=%.1f, PM2.5=%.1f\n",
+                       zona->historico[dia].co2, zona->historico[dia].so2, 
+                       zona->historico[dia].no2, zona->historico[dia].pm25);
+                       
+                float nuevos_valores[4];
+                char *nombres_cont[] = {"CO2 (ppm)", "SO2 (ug/m3)", "NO2 (ug/m3)", "PM2.5 (ug/m3)"};
+                float rangos_min[] = {0.0, 0.0, 0.0, 0.0};
+                float rangos_max[] = {1000.0, 500.0, 300.0, 200.0};
+                
+                printf("Ingrese los nuevos valores:\n");
+                for(int i = 0; i < 4; i++) {
+                    funcionValidarDatosdeRegistro(&nuevos_valores[i], nombres_cont[i], 
+                                                 rangos_min[i], rangos_max[i]);
+                }
+                
+                // Confirmar cambios masivos
+                printf("\nRESUMEN DE CAMBIOS:\n");
+                printf("CO2:\t%.1f\t-->\t%.1f ppm\n", zona->historico[dia].co2, nuevos_valores[0]);
+                printf("SO2:\t%.1f\t-->\t%.1f ug/m3\n", zona->historico[dia].so2, nuevos_valores[1]);
+                printf("NO2:\t%.1f\t-->\t%.1f ug/m3\n", zona->historico[dia].no2, nuevos_valores[2]);
+                printf("PM2.5:\t%.1f\t-->\t%.1f ug/m3\n", zona->historico[dia].pm25, nuevos_valores[3]);
+                
+                do {
+                    printf("¿Confirma TODOS estos cambios? (s/n): ");
+                    scanf(" %c", &confirmacion);
+                    fflush(stdin);
+                } while(confirmacion != 's' && confirmacion != 'S' && confirmacion != 'n' && confirmacion != 'N');
+                
+                if(confirmacion == 's' || confirmacion == 'S') {
+                    zona->historico[dia].co2 = nuevos_valores[0];
+                    zona->historico[dia].so2 = nuevos_valores[1];
+                    zona->historico[dia].no2 = nuevos_valores[2];
+                    zona->historico[dia].pm25 = nuevos_valores[3];
+                    
+                    // Actualizar niveles actuales si es el día más reciente
+                    if(dia == 0) {
+                        zona->niveles_actuales = zona->historico[0];
+                    }
+                    
+                    printf("EXITO: Todos los contaminantes actualizados exitosamente.\n");
+                    cambios_dia += 4;
+                } else {
+                    printf("ERROR: Cambios cancelados.\n");
+                }
+                continue;
+            }
+            
+            // Edición individual
+            char *nombres[] = {"", "CO2 (ppm)", "SO2 (ug/m3)", "NO2 (ug/m3)", "PM2.5 (ug/m3)",
+                              "Temperatura (C)", "Viento (km/h)", "Humedad (%)", "Presion (hPa)"};
+            float rangos_min[] = {0, 0.0, 0.0, 0.0, 0.0, -20.0, 0.0, 0.0, 900.0};
+            float rangos_max[] = {0, 1000.0, 500.0, 300.0, 200.0, 50.0, 120.0, 100.0, 1100.0};
+            
+            printf("\nEDITANDO: %s\n", nombres[subop]);
             printf("Valor actual: ");
             switch(subop) {
-                case 1: printf("%.1f C\n", zona->clima_actual.temperatura); break;
-                case 2: printf("%.1f km/h\n", zona->clima_actual.velocidad_viento); break;
-                case 3: printf("%.1f%%\n", zona->clima_actual.humedad); break;
-                case 4: printf("%.1f hPa\n", zona->clima_actual.presion_atmosferica); break;
+                case 1: printf("%.1f ppm\n", zona->historico[dia].co2); break;
+                case 2: printf("%.1f ug/m3\n", zona->historico[dia].so2); break;
+                case 3: printf("%.1f ug/m3\n", zona->historico[dia].no2); break;
+                case 4: printf("%.1f ug/m3\n", zona->historico[dia].pm25); break;
+                case 5: printf("%.1f C\n", zona->clima_actual.temperatura); break;
+                case 6: printf("%.1f km/h\n", zona->clima_actual.velocidad_viento); break;
+                case 7: printf("%.1f%%\n", zona->clima_actual.humedad); break;
+                case 8: printf("%.1f hPa\n", zona->clima_actual.presion_atmosferica); break;
             }
-
-            // Usar función de validación con rangos apropiados para datos climáticos
-            char *nombres_clima[] = {"Temperatura (Celsius)", "Velocidad del viento (km/h)", 
-                                    "Humedad (%)", "Presion (hPa)"};
-            float rangos_min_clima[] = {-20.0, 0.0, 0.0, 900.0};
-            float rangos_max_clima[] = {50.0, 120.0, 100.0, 1100.0};
             
-            printf("Ingrese el nuevo valor:\n");
-            funcionValidarDatosdeRegistro(&nuevo_valor, nombres_clima[subop-1], 
-                                         rangos_min_clima[subop-1], rangos_max_clima[subop-1]);
+            funcionValidarDatosdeRegistro(&nuevo_valor, nombres[subop], 
+                                         rangos_min[subop], rangos_max[subop]);
 
+            // Confirmar cambio individual
             do {
-                printf("Confirma la correccion? (s/n): ");
+                printf("¿Confirma el cambio de %s? (s/n): ", nombres[subop]);
                 scanf(" %c", &confirmacion);
                 fflush(stdin);
-                if(confirmacion != 's' && confirmacion != 'S' && confirmacion != 'n' && confirmacion != 'N') {
-                printf("Opcion invalida. Ingrese 's' para si o 'n' para no.\n");
-                }
             } while(confirmacion != 's' && confirmacion != 'S' && confirmacion != 'n' && confirmacion != 'N');
 
-            if(confirmacion == 'n' || confirmacion == 'N') {
-                printf("Operacion cancelada.\n");
-                return;
+            if(confirmacion == 's' || confirmacion == 'S') {
+                switch(subop) {
+                    case 1: zona->historico[dia].co2 = nuevo_valor; break;
+                    case 2: zona->historico[dia].so2 = nuevo_valor; break;
+                    case 3: zona->historico[dia].no2 = nuevo_valor; break;
+                    case 4: zona->historico[dia].pm25 = nuevo_valor; break;
+                    case 5: zona->clima_actual.temperatura = nuevo_valor; break;
+                    case 6: zona->clima_actual.velocidad_viento = nuevo_valor; break;
+                    case 7: zona->clima_actual.humedad = nuevo_valor; break;
+                    case 8: zona->clima_actual.presion_atmosferica = nuevo_valor; break;
+                }
+                
+                // Si editamos el día más reciente (día 1 = índice 0), actualizar niveles actuales
+                if(dia == 0 && subop <= 4) {
+                    zona->niveles_actuales = zona->historico[0];
+                    printf("INFO: Niveles actuales actualizados (día más reciente modificado).\n");
+                }
+                
+                printf("EXITO: Cambio aplicado exitosamente.\n");
+                cambios_dia++;
+                
+                // Guardar inmediatamente para evitar pérdida de datos
+                guardarZona(zona);
+            } else {
+                printf("ERROR: Cambio cancelado.\n");
             }
+                
+        } while(1); // El bucle se rompe con subop == 0
 
-
-        switch(subop) {
-            case 1: zona->clima_actual.temperatura = nuevo_valor; break;
-            case 2: zona->clima_actual.velocidad_viento = nuevo_valor; break;
-            case 3: zona->clima_actual.humedad = nuevo_valor; break;
-            case 4: zona->clima_actual.presion_atmosferica = nuevo_valor; break;
+        // Resumen de cambios del día
+        if(cambios_dia > 0) {
+            printf("\nRESUMEN: %d cambio(s) realizado(s) en el dia %d\n", cambios_dia, dia + 1);
+            cambios_realizados += cambios_dia;
         }
-        printf("Dato climatico corregido exitosamente.\n");
-    }
+        
+        // Preguntar si quiere editar otro día
+        do {
+            printf("\n¿Desea editar otro dia de esta zona? (s/n): ");
+            scanf(" %c", &continuar_editando);
+            fflush(stdin);
+        } while(continuar_editando != 's' && continuar_editando != 'S' && 
+                continuar_editando != 'n' && continuar_editando != 'N');
+                
+    } while(continuar_editando == 's' || continuar_editando == 'S');
 
-    // Guardar zona actualizada
-    guardarZona(zona);
+    // Guardar cambios si se realizaron
+    if(cambios_realizados > 0) {
+        guardarZona(zona);
+        printf("\nDATOS GUARDADOS: %d cambio(s) total(es) en %s\n", 
+               cambios_realizados, zona->nombre);
+    }
+    
+    // Preguntar si quiere editar otra zona
+    do {
+        printf("\n¿Desea editar datos de otra zona? (s/n): ");
+        scanf(" %c", &continuar_editando);
+        fflush(stdin);
+    } while(continuar_editando != 's' && continuar_editando != 'S' && 
+            continuar_editando != 'n' && continuar_editando != 'N');
+    
+    if(continuar_editando == 's' || continuar_editando == 'S') {
+        corregirDatosIngresados(zonas);
+    }
+    
+    printf("\nEditor finalizado. Total de cambios realizados: %d\n", cambios_realizados);
 }
 
