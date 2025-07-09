@@ -2,9 +2,9 @@
 #define MAX_DIAS_HISTORICOS 30
 #define MAX_NOMBRE 50 
 
-// Límites OMS (valores de referencia)
-#define LIMITE_CO2_OMS 400.0     // ppm
-#define LIMITE_SO2_OMS 20.0      // µg/m³ (24h)
+// Límites OMS (valores de referencia - Guías 2021)
+#define LIMITE_CO2_OMS 1000.0    // ppm (límite urbano ASHRAE)
+#define LIMITE_SO2_OMS 40.0      // µg/m³ (24h)
 #define LIMITE_NO2_OMS 25.0      // µg/m³ (24h)
 #define LIMITE_PM25_OMS 15.0     // µg/m³ (24h)
 
