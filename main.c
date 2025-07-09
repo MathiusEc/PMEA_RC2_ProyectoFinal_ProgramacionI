@@ -47,14 +47,15 @@ int main(int argc, char *argv[]) {
     printf("======================================================\n");
     printf("Inicializando sistema...\n\n");
     
-    // Intentar cargar zonas desde archivos separados
+    // Cargar zonas desde archivos separados
     zonas_cargadas = cargarTodasLasZonas(zonas);
     
-    // Si no se pudieron cargar las zonas, inicializar por primera vez
     if(zonas_cargadas == 0) {
-        printf("No se encontraron datos previos. Inicializando zonas...\n");
-        inicializarZonas(zonas);
-        zonas_cargadas = MAX_ZONAS;
+        printf("ERROR: No se encontraron archivos de datos.\n");
+        printf("Por favor, ejecute 'generar_datos.exe' primero para crear los datos de practica.\n");
+        printf("Presione Enter para salir...");
+        getchar();
+        return 1;
     }
     
     printf("Sistema listo con %d zonas operativas\n\n", zonas_cargadas);
@@ -93,6 +94,16 @@ int main(int argc, char *argv[]) {
             
             case 6:
                 printf("\n");
+                mostrarHistorialConFechas(zonas);
+                break;
+                
+            case 7:
+                printf("\n");
+                menuExportarReportes(zonas);
+                break;
+                
+            case 8:
+                printf("\n");
                 mostrarEstadoSistema(zonas);
                 break;
                 
@@ -117,4 +128,4 @@ int main(int argc, char *argv[]) {
     } while(opcion != 0);
     
     return 0;
-} 
+}

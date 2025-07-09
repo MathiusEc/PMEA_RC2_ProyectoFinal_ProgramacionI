@@ -36,6 +36,20 @@ typedef struct {
     float pm25;     // PM2.5 en µg/m³
 } NivelesContaminacion;
 
+// Estructura para fecha
+typedef struct {
+    int dia;
+    int mes;
+    int año;
+} Fecha;
+
+// Estructura para registro histórico diario
+typedef struct {
+    Fecha fecha;
+    NivelesContaminacion niveles;
+    DatosClimaticos clima;
+} RegistroHistorico;
+
 // Estructura para límites OMS
 typedef struct {
     float co2_limite;
@@ -50,6 +64,7 @@ typedef struct {
     int id_zona;
     NivelesContaminacion niveles_actuales;
     NivelesContaminacion historico[MAX_DIAS_HISTORICOS];
+    RegistroHistorico historico_fechas[MAX_DIAS_HISTORICOS];
     DatosClimaticos clima_actual;
     float promedio_30_dias[4]; // Para CO₂, SO₂, NO₂, PM2.5
     int dias_registrados;
@@ -105,4 +120,14 @@ void mostrarRecomendaciones(int nivel_alerta, char *contaminante);
 // Funciones para predicción climática
 DatosClimaticos predecirClima24h(ZonaUrbana *zona);
 float calcularPrediccionClimatica(float *historico_clima, int dias_disponibles);
+
+// Funciones para manejo de fechas
+void mostrarFecha(Fecha fecha);
+int compararFechas(Fecha f1, Fecha f2);
+void inicializarDatosHistoricosConFechas(ZonaUrbana zonas[]);
+void mostrarHistorialConFechas(ZonaUrbana zonas[]);
+
+// Funciones para exportación de reportes
+void exportarReportePorZona(ZonaUrbana zonas[], int zona_id);
+void menuExportarReportes(ZonaUrbana zonas[]);
 

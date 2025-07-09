@@ -39,6 +39,7 @@
 
  #include <stdio.h>
  #include <string.h>
+ #include <time.h>
  #include "funciones.h"
 
 // Función para calcular valor absoluto sin usar math.h
@@ -70,18 +71,20 @@ int menu()
         printf("3. Tendencias e Histórico                 \n");
         printf("4. Pronóstico 24 Horas                    \n");
         printf("5. Gestión de Datos                       \n");
-        printf("6. Estado del Sistema                     \n");
+        printf("6. Historial con Fechas                   \n");
+        printf("7. Exportar Reportes                      \n");
+        printf("8. Estado del Sistema                     \n");
         printf("0. Salir                                   \n");
         printf("===========================================\n");
         printf("Seleccione una opción: ");
         fflush(stdin);
         val = scanf("%d", &opc);
         fflush(stdin);
-        if (val != 1 || opc < 0 || opc > 6)
+        if (val != 1 || opc < 0 || opc > 8)
         {
             printf("Opción inválida. Por favor, intente de nuevo.\n");
         }
-    } while (val != 1 || opc < 0 || opc > 6);
+    } while (val != 1 || opc < 0 || opc > 8);
     return opc;
 }
 
@@ -234,6 +237,7 @@ void registroDatosDiario(ZonaUrbana zonas[]) {
     // Mover datos históricos (FIFO - lo más reciente al inicio)
     for(int i = MAX_DIAS_HISTORICOS-1; i > 0; i--) {
         zonas[id_zona - 1].historico[i] = zonas[id_zona - 1].historico[i-1];
+        zonas[id_zona - 1].historico_fechas[i] = zonas[id_zona - 1].historico_fechas[i-1];
     }
 
     // Leer nuevos datos con validación
@@ -269,6 +273,18 @@ void registroDatosDiario(ZonaUrbana zonas[]) {
 
     // Actualizar niveles actuales
     zonas[id_zona - 1].historico[0] = zonas[id_zona - 1].niveles_actuales;
+    
+    // Actualizar histórico con fechas (fecha actual)
+    time_t tiempo_actual;
+    struct tm *info_tiempo;
+    time(&tiempo_actual);
+    info_tiempo = localtime(&tiempo_actual);
+    
+    zonas[id_zona - 1].historico_fechas[0].fecha.dia = info_tiempo->tm_mday;
+    zonas[id_zona - 1].historico_fechas[0].fecha.mes = info_tiempo->tm_mon + 1;
+    zonas[id_zona - 1].historico_fechas[0].fecha.año = info_tiempo->tm_year + 1900;
+    zonas[id_zona - 1].historico_fechas[0].niveles = zonas[id_zona - 1].niveles_actuales;
+    zonas[id_zona - 1].historico_fechas[0].clima = zonas[id_zona - 1].clima_actual;
 
     // Incrementar contador de días registrados
     if (zonas[id_zona - 1].dias_registrados < MAX_DIAS_HISTORICOS) {
@@ -424,8 +440,8 @@ void monitoreoDetalladoPorZona(ZonaUrbana zonas[]) {
     // 3. HISTORIAL RECIENTE (últimos 5 días)
     printf("\nHISTORIAL RECIENTE:\n");
     printf("-----------------------------------------------\n");
-    printf("Dia  | CO2    | SO2    | NO2    | PM2.5  | Estado\n");
-    printf("-----|--------|--------|--------|--------|--------\n");
+    printf("Fecha      | CO2    | SO2    | NO2    | PM2.5  | Estado\n");
+    printf("-----------|--------|--------|--------|--------|--------\n");
     
     int dias_mostrar;
     if(zonas[zona_seleccionada].dias_registrados > 5) {
@@ -437,10 +453,10 @@ void monitoreoDetalladoPorZona(ZonaUrbana zonas[]) {
     for(int i = 0; i < dias_mostrar; i++) {
         // Contar excesos para determinar estado
         int excesos = 0;
-        if(zonas[zona_seleccionada].historico[i].co2 > LIMITE_CO2_OMS) excesos++;
-        if(zonas[zona_seleccionada].historico[i].so2 > LIMITE_SO2_OMS) excesos++;
-        if(zonas[zona_seleccionada].historico[i].no2 > LIMITE_NO2_OMS) excesos++;
-        if(zonas[zona_seleccionada].historico[i].pm25 > LIMITE_PM25_OMS) excesos++;
+        if(zonas[zona_seleccionada].historico_fechas[i].niveles.co2 > LIMITE_CO2_OMS) excesos++;
+        if(zonas[zona_seleccionada].historico_fechas[i].niveles.so2 > LIMITE_SO2_OMS) excesos++;
+        if(zonas[zona_seleccionada].historico_fechas[i].niveles.no2 > LIMITE_NO2_OMS) excesos++;
+        if(zonas[zona_seleccionada].historico_fechas[i].niveles.pm25 > LIMITE_PM25_OMS) excesos++;
         
         char estado[16];
         if(excesos == 0) {
@@ -453,12 +469,14 @@ void monitoreoDetalladoPorZona(ZonaUrbana zonas[]) {
             strcpy(estado, "Peligroso");
         }
         
-        printf("%-4d | %-6.1f | %-6.1f | %-6.1f | %-6.1f | %s\n",
-               i+1,
-               zonas[zona_seleccionada].historico[i].co2,
-               zonas[zona_seleccionada].historico[i].so2,
-               zonas[zona_seleccionada].historico[i].no2,
-               zonas[zona_seleccionada].historico[i].pm25,
+        printf("%02d/%02d/%04d | %-6.1f | %-6.1f | %-6.1f | %-6.1f | %s\n",
+               zonas[zona_seleccionada].historico_fechas[i].fecha.dia,
+               zonas[zona_seleccionada].historico_fechas[i].fecha.mes,
+               zonas[zona_seleccionada].historico_fechas[i].fecha.año,
+               zonas[zona_seleccionada].historico_fechas[i].niveles.co2,
+               zonas[zona_seleccionada].historico_fechas[i].niveles.so2,
+               zonas[zona_seleccionada].historico_fechas[i].niveles.no2,
+               zonas[zona_seleccionada].historico_fechas[i].niveles.pm25,
                estado);
     }
     
@@ -576,8 +594,8 @@ void mostrarTendenciasHistorico(ZonaUrbana zonas[]) {
     printf("\n1. HISTORIAL DETALLADO DE CONTAMINANTES:\n");
     printf("------------------------------------------------------\n");
     
-    printf("Dia  | CO2    | SO2    | NO2    | PM2.5  | Estado General\n");
-    printf("-----|--------|--------|--------|--------|---------------\n");
+    printf("Fecha      | CO2    | SO2    | NO2    | PM2.5  | Estado General\n");
+    printf("-----------|--------|--------|--------|--------|---------------\n");
     
     int dias_mostrar;
     if(zonas[zona_seleccionada].dias_registrados > 10) {
@@ -589,10 +607,10 @@ void mostrarTendenciasHistorico(ZonaUrbana zonas[]) {
     for(int i = 0; i < dias_mostrar; i++) {
         // Contar excesos para determinar estado
         int excesos = 0;
-        if(zonas[zona_seleccionada].historico[i].co2 > LIMITE_CO2_OMS) excesos++;
-        if(zonas[zona_seleccionada].historico[i].so2 > LIMITE_SO2_OMS) excesos++;
-        if(zonas[zona_seleccionada].historico[i].no2 > LIMITE_NO2_OMS) excesos++;
-        if(zonas[zona_seleccionada].historico[i].pm25 > LIMITE_PM25_OMS) excesos++;
+        if(zonas[zona_seleccionada].historico_fechas[i].niveles.co2 > LIMITE_CO2_OMS) excesos++;
+        if(zonas[zona_seleccionada].historico_fechas[i].niveles.so2 > LIMITE_SO2_OMS) excesos++;
+        if(zonas[zona_seleccionada].historico_fechas[i].niveles.no2 > LIMITE_NO2_OMS) excesos++;
+        if(zonas[zona_seleccionada].historico_fechas[i].niveles.pm25 > LIMITE_PM25_OMS) excesos++;
         
         char estado[16];
         if(excesos == 0) {
@@ -605,21 +623,23 @@ void mostrarTendenciasHistorico(ZonaUrbana zonas[]) {
             strcpy(estado, "Peligroso");
         }
         
-        printf("%-4d | %-6.1f | %-6.1f | %-6.1f | %-6.1f | %s",
-               i+1,
-               zonas[zona_seleccionada].historico[i].co2,
-               zonas[zona_seleccionada].historico[i].so2,
-               zonas[zona_seleccionada].historico[i].no2,
-               zonas[zona_seleccionada].historico[i].pm25,
+        printf("%02d/%02d/%04d | %-6.1f | %-6.1f | %-6.1f | %-6.1f | %s",
+               zonas[zona_seleccionada].historico_fechas[i].fecha.dia,
+               zonas[zona_seleccionada].historico_fechas[i].fecha.mes,
+               zonas[zona_seleccionada].historico_fechas[i].fecha.año,
+               zonas[zona_seleccionada].historico_fechas[i].niveles.co2,
+               zonas[zona_seleccionada].historico_fechas[i].niveles.so2,
+               zonas[zona_seleccionada].historico_fechas[i].niveles.no2,
+               zonas[zona_seleccionada].historico_fechas[i].niveles.pm25,
                estado);
         
         // Marcar si excede límites OMS
         if(excesos > 0) {
             printf(" (");
-            if(zonas[zona_seleccionada].historico[i].co2 > LIMITE_CO2_OMS) printf("CO2 ");
-            if(zonas[zona_seleccionada].historico[i].so2 > LIMITE_SO2_OMS) printf("SO2 ");
-            if(zonas[zona_seleccionada].historico[i].no2 > LIMITE_NO2_OMS) printf("NO2 ");
-            if(zonas[zona_seleccionada].historico[i].pm25 > LIMITE_PM25_OMS) printf("PM2.5 ");
+            if(zonas[zona_seleccionada].historico_fechas[i].niveles.co2 > LIMITE_CO2_OMS) printf("CO2 ");
+            if(zonas[zona_seleccionada].historico_fechas[i].niveles.so2 > LIMITE_SO2_OMS) printf("SO2 ");
+            if(zonas[zona_seleccionada].historico_fechas[i].niveles.no2 > LIMITE_NO2_OMS) printf("NO2 ");
+            if(zonas[zona_seleccionada].historico_fechas[i].niveles.pm25 > LIMITE_PM25_OMS) printf("PM2.5 ");
             printf("exceden)");
         }
         printf("\n");
@@ -636,30 +656,30 @@ void mostrarTendenciasHistorico(ZonaUrbana zonas[]) {
     
     for(int i = 0; i < zonas[zona_seleccionada].dias_registrados; i++) {
         // Sumas para promedio
-        suma_co2 += zonas[zona_seleccionada].historico[i].co2;
-        suma_so2 += zonas[zona_seleccionada].historico[i].so2;
-        suma_no2 += zonas[zona_seleccionada].historico[i].no2;
-        suma_pm25 += zonas[zona_seleccionada].historico[i].pm25;
+        suma_co2 += zonas[zona_seleccionada].historico_fechas[i].niveles.co2;
+        suma_so2 += zonas[zona_seleccionada].historico_fechas[i].niveles.so2;
+        suma_no2 += zonas[zona_seleccionada].historico_fechas[i].niveles.no2;
+        suma_pm25 += zonas[zona_seleccionada].historico_fechas[i].niveles.pm25;
         
         // Máximos
-        if(zonas[zona_seleccionada].historico[i].co2 > max_co2) 
-            max_co2 = zonas[zona_seleccionada].historico[i].co2;
-        if(zonas[zona_seleccionada].historico[i].so2 > max_so2) 
-            max_so2 = zonas[zona_seleccionada].historico[i].so2;
-        if(zonas[zona_seleccionada].historico[i].no2 > max_no2) 
-            max_no2 = zonas[zona_seleccionada].historico[i].no2;
-        if(zonas[zona_seleccionada].historico[i].pm25 > max_pm25) 
-            max_pm25 = zonas[zona_seleccionada].historico[i].pm25;
+        if(zonas[zona_seleccionada].historico_fechas[i].niveles.co2 > max_co2) 
+            max_co2 = zonas[zona_seleccionada].historico_fechas[i].niveles.co2;
+        if(zonas[zona_seleccionada].historico_fechas[i].niveles.so2 > max_so2) 
+            max_so2 = zonas[zona_seleccionada].historico_fechas[i].niveles.so2;
+        if(zonas[zona_seleccionada].historico_fechas[i].niveles.no2 > max_no2) 
+            max_no2 = zonas[zona_seleccionada].historico_fechas[i].niveles.no2;
+        if(zonas[zona_seleccionada].historico_fechas[i].niveles.pm25 > max_pm25) 
+            max_pm25 = zonas[zona_seleccionada].historico_fechas[i].niveles.pm25;
         
         // Mínimos
-        if(zonas[zona_seleccionada].historico[i].co2 < min_co2) 
-            min_co2 = zonas[zona_seleccionada].historico[i].co2;
-        if(zonas[zona_seleccionada].historico[i].so2 < min_so2) 
-            min_so2 = zonas[zona_seleccionada].historico[i].so2;
-        if(zonas[zona_seleccionada].historico[i].no2 < min_no2) 
-            min_no2 = zonas[zona_seleccionada].historico[i].no2;
-        if(zonas[zona_seleccionada].historico[i].pm25 < min_pm25) 
-            min_pm25 = zonas[zona_seleccionada].historico[i].pm25;
+        if(zonas[zona_seleccionada].historico_fechas[i].niveles.co2 < min_co2) 
+            min_co2 = zonas[zona_seleccionada].historico_fechas[i].niveles.co2;
+        if(zonas[zona_seleccionada].historico_fechas[i].niveles.so2 < min_so2) 
+            min_so2 = zonas[zona_seleccionada].historico_fechas[i].niveles.so2;
+        if(zonas[zona_seleccionada].historico_fechas[i].niveles.no2 < min_no2) 
+            min_no2 = zonas[zona_seleccionada].historico_fechas[i].niveles.no2;
+        if(zonas[zona_seleccionada].historico_fechas[i].niveles.pm25 < min_pm25) 
+            min_pm25 = zonas[zona_seleccionada].historico_fechas[i].niveles.pm25;
     }
     
     // Calcular promedios
@@ -1533,5 +1553,258 @@ void corregirDatosIngresados(ZonaUrbana zonas[]) {
     }
     
     printf("\nEditor finalizado. Total de cambios realizados: %d\n", cambios_realizados);
+}
+
+
+
+// ===== FUNCIONES PARA MANEJO DE FECHAS =====
+
+void mostrarFecha(Fecha fecha) {
+    printf("%02d/%02d/%04d", fecha.dia, fecha.mes, fecha.año);
+}
+
+int compararFechas(Fecha f1, Fecha f2) {
+    if (f1.año != f2.año) return f1.año - f2.año;
+    if (f1.mes != f2.mes) return f1.mes - f2.mes;
+    return f1.dia - f2.dia;
+}
+
+void mostrarHistorialConFechas(ZonaUrbana zonas[]) {
+    printf("=== HISTORIAL DE DATOS CON FECHAS ===\n");
+    printf("======================================\n\n");
+    
+    int zona_seleccionada, val;
+    
+    // Mostrar zonas disponibles
+    printf("ZONAS DISPONIBLES:\n");
+    for(int i = 0; i < MAX_ZONAS; i++) {
+        printf("%d. %s", zonas[i].id_zona, zonas[i].nombre);
+        if(zonas[i].dias_registrados > 0) {
+            printf(" (%d dias de datos)\n", zonas[i].dias_registrados);
+        } else {
+            printf(" (Sin datos)\n");
+        }
+    }
+    
+    // Seleccionar zona
+    do {
+        printf("\nSeleccione la zona para ver historial (1-%d): ", MAX_ZONAS);
+        val = scanf("%d", &zona_seleccionada);
+        fflush(stdin);
+        
+        if(val != 1 || zona_seleccionada < 1 || zona_seleccionada > MAX_ZONAS) {
+            printf("Opcion invalida. Por favor, intente de nuevo.\n");
+        }
+    } while(val != 1 || zona_seleccionada < 1 || zona_seleccionada > MAX_ZONAS);
+    
+    zona_seleccionada--;
+    
+    if(zonas[zona_seleccionada].dias_registrados == 0) {
+        printf("\nERROR: La zona '%s' no tiene datos registrados.\n", 
+               zonas[zona_seleccionada].nombre);
+        return;
+    }
+    
+    printf("\n=== HISTORIAL DETALLADO: %s ===\n", zonas[zona_seleccionada].nombre);
+    printf("================================================================\n");
+    
+    printf("Fecha      | CO2    | SO2    | NO2    | PM2.5  | Estado General\n");
+    printf("-----------|--------|--------|--------|--------|---------------\n");
+    
+    // Mostrar todos los días registrados
+    for(int i = 0; i < zonas[zona_seleccionada].dias_registrados; i++) {
+        // Contar excesos para determinar estado
+        int excesos = 0;
+        if(zonas[zona_seleccionada].historico_fechas[i].niveles.co2 > LIMITE_CO2_OMS) excesos++;
+        if(zonas[zona_seleccionada].historico_fechas[i].niveles.so2 > LIMITE_SO2_OMS) excesos++;
+        if(zonas[zona_seleccionada].historico_fechas[i].niveles.no2 > LIMITE_NO2_OMS) excesos++;
+        if(zonas[zona_seleccionada].historico_fechas[i].niveles.pm25 > LIMITE_PM25_OMS) excesos++;
+        
+        char estado[16];
+        if(excesos == 0) {
+            strcpy(estado, "Bueno");
+        } else if(excesos <= 1) {
+            strcpy(estado, "Moderado");
+        } else if(excesos <= 2) {
+            strcpy(estado, "Danino");
+        } else {
+            strcpy(estado, "Peligroso");
+        }
+        
+        // Mostrar fecha y datos
+        printf("%02d/%02d/%04d | %-6.1f | %-6.1f | %-6.1f | %-6.1f | %s",
+               zonas[zona_seleccionada].historico_fechas[i].fecha.dia,
+               zonas[zona_seleccionada].historico_fechas[i].fecha.mes,
+               zonas[zona_seleccionada].historico_fechas[i].fecha.año,
+               zonas[zona_seleccionada].historico_fechas[i].niveles.co2,
+               zonas[zona_seleccionada].historico_fechas[i].niveles.so2,
+               zonas[zona_seleccionada].historico_fechas[i].niveles.no2,
+               zonas[zona_seleccionada].historico_fechas[i].niveles.pm25,
+               estado);
+        
+        // Marcar si excede límites OMS
+        if(excesos > 0) {
+            printf(" (");
+            if(zonas[zona_seleccionada].historico_fechas[i].niveles.co2 > LIMITE_CO2_OMS) printf("CO2 ");
+            if(zonas[zona_seleccionada].historico_fechas[i].niveles.so2 > LIMITE_SO2_OMS) printf("SO2 ");
+            if(zonas[zona_seleccionada].historico_fechas[i].niveles.no2 > LIMITE_NO2_OMS) printf("NO2 ");
+            if(zonas[zona_seleccionada].historico_fechas[i].niveles.pm25 > LIMITE_PM25_OMS) printf("PM2.5 ");
+            printf("exceden)");
+        }
+        printf("\n");
+    }
+    
+    printf("\nTotal de dias registrados: %d\n", zonas[zona_seleccionada].dias_registrados);
+    printf("Presione Enter para continuar...");
+    getchar();
+    getchar();
+}
+
+// ===== FUNCIONES PARA EXPORTACIÓN DE REPORTES =====
+
+void exportarReportePorZona(ZonaUrbana zonas[], int zona_id) {
+    if (zona_id < 1 || zona_id > MAX_ZONAS) {
+        printf("ID de zona inválido.\n");
+        return;
+    }
+    
+    ZonaUrbana *zona = &zonas[zona_id - 1];
+    
+    char nombre_archivo[200];
+    sprintf(nombre_archivo, "reporte_zona_%d_%s.txt", zona_id, zona->nombre);
+    
+    FILE *archivo = fopen(nombre_archivo, "w");
+    if (archivo == NULL) {
+        printf("Error al crear el archivo de reporte.\n");
+        return;
+    }
+    
+    // Obtener fecha actual para el reporte
+    time_t tiempo_actual = time(NULL);
+    struct tm *tiempo_local = localtime(&tiempo_actual);
+    
+    fprintf(archivo, "========================================\n");
+    fprintf(archivo, "REPORTE DE CALIDAD DEL AIRE\n");
+    fprintf(archivo, "========================================\n");
+    fprintf(archivo, "Zona: %s (ID: %d)\n", zona->nombre, zona->id_zona);
+    fprintf(archivo, "Fecha de generación: %02d/%02d/%04d\n", 
+            tiempo_local->tm_mday, tiempo_local->tm_mon + 1, tiempo_local->tm_year + 1900);
+    fprintf(archivo, "Días con registros: %d\n", zona->dias_registrados);
+    fprintf(archivo, "========================================\n\n");
+    
+    fprintf(archivo, "NIVELES ACTUALES:\n");
+    fprintf(archivo, "- CO₂: %.1f ppm\n", zona->niveles_actuales.co2);
+    fprintf(archivo, "- SO₂: %.1f µg/m³\n", zona->niveles_actuales.so2);
+    fprintf(archivo, "- NO₂: %.1f µg/m³\n", zona->niveles_actuales.no2);
+    fprintf(archivo, "- PM2.5: %.1f µg/m³\n\n", zona->niveles_actuales.pm25);
+    
+    fprintf(archivo, "CONDICIONES CLIMÁTICAS ACTUALES:\n");
+    fprintf(archivo, "- Temperatura: %.1f°C\n", zona->clima_actual.temperatura);
+    fprintf(archivo, "- Velocidad del viento: %.1f km/h\n", zona->clima_actual.velocidad_viento);
+    fprintf(archivo, "- Humedad: %.1f%%\n", zona->clima_actual.humedad);
+    fprintf(archivo, "- Presión atmosférica: %.1f hPa\n\n", zona->clima_actual.presion_atmosferica);
+    
+    fprintf(archivo, "ANÁLISIS RESPECTO A LÍMITES OMS:\n");
+    fprintf(archivo, "- CO₂: %s (Límite: %.1f ppm)\n", 
+            zona->niveles_actuales.co2 <= LIMITE_CO2_OMS ? "DENTRO" : "EXCEDIDO", LIMITE_CO2_OMS);
+    fprintf(archivo, "- SO₂: %s (Límite: %.1f µg/m³)\n", 
+            zona->niveles_actuales.so2 <= LIMITE_SO2_OMS ? "DENTRO" : "EXCEDIDO", LIMITE_SO2_OMS);
+    fprintf(archivo, "- NO₂: %s (Límite: %.1f µg/m³)\n", 
+            zona->niveles_actuales.no2 <= LIMITE_NO2_OMS ? "DENTRO" : "EXCEDIDO", LIMITE_NO2_OMS);
+    fprintf(archivo, "- PM2.5: %s (Límite: %.1f µg/m³)\n\n", 
+            zona->niveles_actuales.pm25 <= LIMITE_PM25_OMS ? "DENTRO" : "EXCEDIDO", LIMITE_PM25_OMS);
+    
+    if (zona->dias_registrados > 0) {
+        fprintf(archivo, "HISTÓRICO DE DATOS (ÚLTIMOS %d DÍAS):\n", zona->dias_registrados);
+        fprintf(archivo, "Fecha\t\tCO₂\tSO₂\tNO₂\tPM2.5\tTemp\tViento\tHumedad\tPresión\n");
+        fprintf(archivo, "------------------------------------------------------------------------\n");
+        
+        for (int i = 0; i < zona->dias_registrados; i++) {
+            fprintf(archivo, "%02d/%02d/%04d\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\n",
+                    zona->historico_fechas[i].fecha.dia,
+                    zona->historico_fechas[i].fecha.mes,
+                    zona->historico_fechas[i].fecha.año,
+                    zona->historico_fechas[i].niveles.co2,
+                    zona->historico_fechas[i].niveles.so2,
+                    zona->historico_fechas[i].niveles.no2,
+                    zona->historico_fechas[i].niveles.pm25,
+                    zona->historico_fechas[i].clima.temperatura,
+                    zona->historico_fechas[i].clima.velocidad_viento,
+                    zona->historico_fechas[i].clima.humedad,
+                    zona->historico_fechas[i].clima.presion_atmosferica);
+        }
+        
+        fprintf(archivo, "\nESTADÍSTICAS DEL PERÍODO:\n");
+        fprintf(archivo, "Promedios:\n");
+        fprintf(archivo, "- CO₂: %.1f ppm\n", zona->promedio_30_dias[0]);
+        fprintf(archivo, "- SO₂: %.1f µg/m³\n", zona->promedio_30_dias[1]);
+        fprintf(archivo, "- NO₂: %.1f µg/m³\n", zona->promedio_30_dias[2]);
+        fprintf(archivo, "- PM2.5: %.1f µg/m³\n\n", zona->promedio_30_dias[3]);
+        
+        // Calcular valores máximos
+        float max_co2 = zona->historico_fechas[0].niveles.co2;
+        float max_so2 = zona->historico_fechas[0].niveles.so2;
+        float max_no2 = zona->historico_fechas[0].niveles.no2;
+        float max_pm25 = zona->historico_fechas[0].niveles.pm25;
+        
+        int dias_exceso = 0;
+        for (int i = 0; i < zona->dias_registrados; i++) {
+            if (zona->historico_fechas[i].niveles.co2 > max_co2) max_co2 = zona->historico_fechas[i].niveles.co2;
+            if (zona->historico_fechas[i].niveles.so2 > max_so2) max_so2 = zona->historico_fechas[i].niveles.so2;
+            if (zona->historico_fechas[i].niveles.no2 > max_no2) max_no2 = zona->historico_fechas[i].niveles.no2;
+            if (zona->historico_fechas[i].niveles.pm25 > max_pm25) max_pm25 = zona->historico_fechas[i].niveles.pm25;
+            
+            // Contar días con excesos
+            if (zona->historico_fechas[i].niveles.co2 > LIMITE_CO2_OMS ||
+                zona->historico_fechas[i].niveles.so2 > LIMITE_SO2_OMS ||
+                zona->historico_fechas[i].niveles.no2 > LIMITE_NO2_OMS ||
+                zona->historico_fechas[i].niveles.pm25 > LIMITE_PM25_OMS) {
+                dias_exceso++;
+            }
+        }
+        
+        fprintf(archivo, "Valores máximos registrados:\n");
+        fprintf(archivo, "- CO₂: %.1f ppm\n", max_co2);
+        fprintf(archivo, "- SO₂: %.1f µg/m³\n", max_so2);
+        fprintf(archivo, "- NO₂: %.1f µg/m³\n", max_no2);
+        fprintf(archivo, "- PM2.5: %.1f µg/m³\n\n", max_pm25);
+        
+        fprintf(archivo, "Días con excesos OMS: %d de %d (%.1f%%)\n\n", 
+                dias_exceso, zona->dias_registrados, 
+                (float)dias_exceso / zona->dias_registrados * 100.0);
+    }
+    
+    fprintf(archivo, "========================================\n");
+    fprintf(archivo, "Fin del reporte\n");
+    fprintf(archivo, "========================================\n");
+    
+    fclose(archivo);
+    printf("Reporte exportado exitosamente: %s\n", nombre_archivo);
+}
+
+void menuExportarReportes(ZonaUrbana zonas[]) {
+    printf("=== EXPORTAR REPORTES ===\n");
+    printf("==========================\n\n");
+    
+    printf("Zonas disponibles:\n");
+    for(int i = 0; i < MAX_ZONAS; i++) {
+        printf("%d. %s\n", zonas[i].id_zona, zonas[i].nombre);
+    }
+    
+    int zona_id, val;
+    do {
+        printf("\nIngrese el ID de la zona (1-%d): ", MAX_ZONAS);
+        val = scanf("%d", &zona_id);
+        fflush(stdin);
+        
+        if(val != 1 || zona_id < 1 || zona_id > MAX_ZONAS) {
+            printf("ID de zona inválido. Por favor, intente de nuevo.\n");
+        }
+    } while(val != 1 || zona_id < 1 || zona_id > MAX_ZONAS);
+    
+    exportarReportePorZona(zonas, zona_id);
+    
+    printf("\nPresione Enter para continuar...");
+    getchar();
 }
 
