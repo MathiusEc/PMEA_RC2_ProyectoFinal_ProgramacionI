@@ -302,210 +302,212 @@ void registroDatosDiario(ZonaUrbana zonas[]) {
 }
 
 void monitoreoDetalladoPorZona(ZonaUrbana zonas[]) {
-    // Mostrar fecha y hora al principio
-    printf("=== MONITOREO DETALLADO POR ZONA ===\n");
-    printf("Fecha: %s - Hora: %s\n", __DATE__, __TIME__);
-    printf("===============================================\n");
-    printf("ANALISIS ACTUAL DE CONTAMINANTES POR ZONA\n");
-    printf("===============================================\n\n");
+    // Obtener fecha y hora actual
+    time_t tiempo_actual;
+    struct tm *info_tiempo;
+    time(&tiempo_actual);
+    info_tiempo = localtime(&tiempo_actual);
     
-    // RESUMEN GENERAL INICIAL
-    printf("RESUMEN GENERAL DEL SISTEMA:\n");
-    printf("-----------------------------------------------\n");
+    printf("=== MONITOREO ACTUAL DE CALIDAD DEL AIRE ===\n");
+    printf("Fecha: %02d/%02d/%04d - Hora: %02d:%02d\n", 
+           info_tiempo->tm_mday, 
+           info_tiempo->tm_mon + 1, 
+           info_tiempo->tm_year + 1900,
+           info_tiempo->tm_hour,
+           info_tiempo->tm_min);
+    printf("=============================================\n\n");
     
-    int zonas_con_datos = 0;
-    int zonas_buenas = 0;
-    int zonas_moderadas = 0;
-    int zonas_problematicas = 0;
+    // DASHBOARD GENERAL - Vista rápida de todas las zonas
+    printf("ESTADO ACTUAL DEL SISTEMA:\n");
+    printf("===========================================\n");
     
-    // Mostrar resumen por zona de forma compacta
+    int zonas_activas = 0;
+    int alertas_criticas = 0;
+    
     for(int i = 0; i < MAX_ZONAS; i++) {
         if(zonas[i].dias_registrados > 0) {
-            zonas_con_datos++;
+            zonas_activas++;
             
-            // Calcular estado general de la zona
+            // Contar excesos críticos
             int excesos = 0;
             if(zonas[i].niveles_actuales.co2 > LIMITE_CO2_OMS) excesos++;
             if(zonas[i].niveles_actuales.so2 > LIMITE_SO2_OMS) excesos++;
             if(zonas[i].niveles_actuales.no2 > LIMITE_NO2_OMS) excesos++;
             if(zonas[i].niveles_actuales.pm25 > LIMITE_PM25_OMS) excesos++;
             
-            // Mostrar zona con estado resumido
-            printf("%s: ", zonas[i].nombre);
+            // Determinar estado visual
+            char estado_icono[20];
             if(excesos == 0) {
-                printf("BUENO\n");
-                zonas_buenas++;
-            } else if(excesos == 1) {
-                printf("MODERADO\n");
-                zonas_moderadas++;
+                strcpy(estado_icono, "✓ BUENO");
+            } else if(excesos <= 1) {
+                strcpy(estado_icono, "⚠ MODERADO");
+            } else if(excesos <= 2) {
+                strcpy(estado_icono, "⚠ DAÑINO");
+                alertas_criticas++;
             } else {
-                printf("DANINO\n");
-                zonas_problematicas++;
+                strcpy(estado_icono, "✗ CRÍTICO");
+                alertas_criticas++;
             }
+            
+            printf("%-20s | %s\n", zonas[i].nombre, estado_icono);
         } else {
-            printf("%s: SIN DATOS\n", zonas[i].nombre);
+            printf("%-20s | ⚫ SIN DATOS\n", zonas[i].nombre);
         }
     }
     
-    printf("\nEstado: %d/%d zonas monitoreadas | Buenas: %d | Moderadas: %d | Problemas: %d\n",
-           zonas_con_datos, MAX_ZONAS, zonas_buenas, zonas_moderadas, zonas_problematicas);
+    printf("\nRESUMEN: %d/%d zonas activas | %d alertas críticas\n", 
+           zonas_activas, MAX_ZONAS, alertas_criticas);
     
-    // SELECCIÓN DE ZONA PARA ANÁLISIS DETALLADO
-    printf("\n===============================================\n");
-    printf("ANALISIS DETALLADO POR ZONA\n");
-    printf("===============================================\n");
+    // SELECCIÓN DE ZONA PARA MONITOREO DETALLADO
+    printf("\n===========================================\n");
+    printf("MONITOREO DETALLADO POR ZONA\n");
+    printf("===========================================\n");
     
     int zona_seleccionada, val;
     
-    // Mostrar zonas disponibles para análisis detallado
     printf("\nZONAS DISPONIBLES:\n");
     for(int i = 0; i < MAX_ZONAS; i++) {
         printf("%d. %s", zonas[i].id_zona, zonas[i].nombre);
         if(zonas[i].dias_registrados > 0) {
-            printf(" (%d dias de datos)\n", zonas[i].dias_registrados);
+            // Mostrar fecha del último registro
+            printf(" (Último: %02d/%02d/%04d)", 
+                   zonas[i].historico_fechas[0].fecha.dia,
+                   zonas[i].historico_fechas[0].fecha.mes,
+                   zonas[i].historico_fechas[0].fecha.año);
         } else {
-            printf(" (Sin datos)\n");
+            printf(" (Sin datos)");
         }
+        printf("\n");
     }
     
     // Seleccionar zona
     do {
-        printf("\nSeleccione la zona a analizar (1-%d): ", MAX_ZONAS);
+        printf("\nSeleccione la zona para monitoreo actual (1-%d): ", MAX_ZONAS);
         val = scanf("%d", &zona_seleccionada);
         fflush(stdin);
         
         if(val != 1 || zona_seleccionada < 1 || zona_seleccionada > MAX_ZONAS) {
-            printf("Opcion invalida. Por favor, intente de nuevo.\n");
+            printf("Opción inválida. Por favor, intente de nuevo.\n");
         }
     } while(val != 1 || zona_seleccionada < 1 || zona_seleccionada > MAX_ZONAS);
     
-    // Ajustar índice (resta 1 porque arrays empiezan en 0)
     zona_seleccionada--;
     
     // Verificar si la zona tiene datos
     if(zonas[zona_seleccionada].dias_registrados == 0) {
-        printf("\nERROR: La zona '%s' no tiene datos registrados.\n", 
+        printf("\n❌ ERROR: La zona '%s' no tiene datos registrados.\n", 
                zonas[zona_seleccionada].nombre);
-        printf("Registre datos primero usando la opcion 1 del menu.\n");
+        printf("   Registre datos primero usando la opción 1 del menú.\n");
         return;
     }
     
-    // ================= INFORMACIÓN DETALLADA =================
-    printf("\nANALISIS DETALLADO: %s\n", zonas[zona_seleccionada].nombre);
-    printf("===============================================\n");
+    // ================= MONITOREO ACTUAL =================
+    printf("\n🏙️  MONITOREO ACTUAL: %s\n", zonas[zona_seleccionada].nombre);
+    printf("===========================================\n");
     
-    // 1. DATOS ACTUALES (MÁS RECIENTES)
-    printf("\nDATOS ACTUALES (Ultimo registro):\n");
-    printf("-----------------------------------------------\n");
-    printf("  CO2:   %.1f ppm     | Limite OMS: %.1f | Estado: ", 
+    // Fecha del último registro
+    printf("📅 Último registro: %02d/%02d/%04d\n", 
+           zonas[zona_seleccionada].historico_fechas[0].fecha.dia,
+           zonas[zona_seleccionada].historico_fechas[0].fecha.mes,
+           zonas[zona_seleccionada].historico_fechas[0].fecha.año);
+    
+    // 1. NIVELES ACTUALES DE CONTAMINANTES
+    printf("\n🌬️  NIVELES DE CONTAMINANTES ACTUALES:\n");
+    printf("-------------------------------------------\n");
+    
+    // CO2
+    printf("CO₂:   %6.1f ppm   | Límite: %6.1f | ", 
            zonas[zona_seleccionada].niveles_actuales.co2, LIMITE_CO2_OMS);
     if(zonas[zona_seleccionada].niveles_actuales.co2 > LIMITE_CO2_OMS) {
-        printf("EXCEDE\n");
+        printf("❌ EXCEDE (%.1f%%)\n", 
+               (zonas[zona_seleccionada].niveles_actuales.co2 / LIMITE_CO2_OMS) * 100 - 100);
     } else {
-        printf("OK\n");
+        printf("✅ NORMAL\n");
     }
     
-    printf("  SO2:   %.1f ug/m3   | Limite OMS: %.1f | Estado: ",
+    // SO2
+    printf("SO₂:   %6.1f µg/m³ | Límite: %6.1f | ",
            zonas[zona_seleccionada].niveles_actuales.so2, LIMITE_SO2_OMS);
     if(zonas[zona_seleccionada].niveles_actuales.so2 > LIMITE_SO2_OMS) {
-        printf("EXCEDE\n");
+        printf("❌ EXCEDE (%.1f%%)\n", 
+               (zonas[zona_seleccionada].niveles_actuales.so2 / LIMITE_SO2_OMS) * 100 - 100);
     } else {
-        printf("OK\n");
+        printf("✅ NORMAL\n");
     }
     
-    printf("  NO2:   %.1f ug/m3   | Limite OMS: %.1f | Estado: ",
+    // NO2
+    printf("NO₂:   %6.1f µg/m³ | Límite: %6.1f | ",
            zonas[zona_seleccionada].niveles_actuales.no2, LIMITE_NO2_OMS);
     if(zonas[zona_seleccionada].niveles_actuales.no2 > LIMITE_NO2_OMS) {
-        printf("EXCEDE\n");
+        printf("❌ EXCEDE (%.1f%%)\n", 
+               (zonas[zona_seleccionada].niveles_actuales.no2 / LIMITE_NO2_OMS) * 100 - 100);
     } else {
-        printf("OK\n");
+        printf("✅ NORMAL\n");
     }
     
-    printf("  PM2.5: %.1f ug/m3   | Limite OMS: %.1f | Estado: ",
+    // PM2.5
+    printf("PM2.5: %6.1f µg/m³ | Límite: %6.1f | ",
            zonas[zona_seleccionada].niveles_actuales.pm25, LIMITE_PM25_OMS);
     if(zonas[zona_seleccionada].niveles_actuales.pm25 > LIMITE_PM25_OMS) {
-        printf("EXCEDE\n");
+        printf("❌ EXCEDE (%.1f%%)\n", 
+               (zonas[zona_seleccionada].niveles_actuales.pm25 / LIMITE_PM25_OMS) * 100 - 100);
     } else {
-        printf("OK\n");
+        printf("✅ NORMAL\n");
     }
     
-    // 2. CONDICIONES CLIMÁTICAS
-    printf("\nCONDICIONES CLIMATICAS ACTUALES:\n");
-    printf("-----------------------------------------------\n");
-    printf("  Temperatura:        %.1f C\n", zonas[zona_seleccionada].clima_actual.temperatura);
-    printf("  Velocidad del viento: %.1f km/h\n", zonas[zona_seleccionada].clima_actual.velocidad_viento);
-    printf("  Humedad:            %.1f%%\n", zonas[zona_seleccionada].clima_actual.humedad);
-    printf("  Presion atmosferica: %.1f hPa\n", zonas[zona_seleccionada].clima_actual.presion_atmosferica);
+    // 2. CONDICIONES CLIMÁTICAS ACTUALES
+    printf("\n🌤️  CONDICIONES CLIMÁTICAS ACTUALES:\n");
+    printf("-------------------------------------------\n");
+    printf("Temperatura:       %6.1f°C\n", zonas[zona_seleccionada].clima_actual.temperatura);
+    printf("Viento:           %6.1f km/h\n", zonas[zona_seleccionada].clima_actual.velocidad_viento);
+    printf("Humedad:          %6.1f%%\n", zonas[zona_seleccionada].clima_actual.humedad);
+    printf("Presión:          %6.1f hPa\n", zonas[zona_seleccionada].clima_actual.presion_atmosferica);
     
-    // 3. HISTORIAL RECIENTE (últimos 5 días)
-    printf("\nHISTORIAL RECIENTE:\n");
-    printf("-----------------------------------------------\n");
-    printf("Fecha      | CO2    | SO2    | NO2    | PM2.5  | Estado\n");
-    printf("-----------|--------|--------|--------|--------|--------\n");
+    // 3. ÍNDICE DE CALIDAD DEL AIRE (ICA)
+    printf("\n📊 ÍNDICE DE CALIDAD DEL AIRE:\n");
+    printf("-------------------------------------------\n");
     
-    int dias_mostrar;
-    if(zonas[zona_seleccionada].dias_registrados > 5) {
-        dias_mostrar = 5;
+    int contaminantes_excedidos = 0;
+    if(zonas[zona_seleccionada].niveles_actuales.co2 > LIMITE_CO2_OMS) contaminantes_excedidos++;
+    if(zonas[zona_seleccionada].niveles_actuales.so2 > LIMITE_SO2_OMS) contaminantes_excedidos++;
+    if(zonas[zona_seleccionada].niveles_actuales.no2 > LIMITE_NO2_OMS) contaminantes_excedidos++;
+    if(zonas[zona_seleccionada].niveles_actuales.pm25 > LIMITE_PM25_OMS) contaminantes_excedidos++;
+    
+    if(contaminantes_excedidos == 0) {
+        printf("🟢 BUENO - Calidad del aire satisfactoria\n");
+        printf("   ✓ Seguro para actividades al aire libre\n");
+    } else if(contaminantes_excedidos == 1) {
+        printf("🟡 MODERADO - Calidad del aire aceptable\n");
+        printf("   ⚠ Grupos sensibles deben limitar actividades prolongadas\n");
+    } else if(contaminantes_excedidos <= 2) {
+        printf("🟠 DAÑINO - Calidad del aire no saludable\n");
+        printf("   ⚠ Todos deben reducir actividades al aire libre\n");
     } else {
-        dias_mostrar = zonas[zona_seleccionada].dias_registrados;
+        printf("🔴 CRÍTICO - Calidad del aire peligrosa\n");
+        printf("   ❌ Evitar actividades al aire libre\n");
     }
     
-    for(int i = 0; i < dias_mostrar; i++) {
-        // Contar excesos para determinar estado
-        int excesos = 0;
-        if(zonas[zona_seleccionada].historico_fechas[i].niveles.co2 > LIMITE_CO2_OMS) excesos++;
-        if(zonas[zona_seleccionada].historico_fechas[i].niveles.so2 > LIMITE_SO2_OMS) excesos++;
-        if(zonas[zona_seleccionada].historico_fechas[i].niveles.no2 > LIMITE_NO2_OMS) excesos++;
-        if(zonas[zona_seleccionada].historico_fechas[i].niveles.pm25 > LIMITE_PM25_OMS) excesos++;
+    // 4. RECOMENDACIONES INMEDIATAS
+    printf("\n💡 RECOMENDACIONES INMEDIATAS:\n");
+    printf("-------------------------------------------\n");
+    
+    if(contaminantes_excedidos == 0) {
+        printf("✓ Condiciones favorables para actividades exteriores\n");
+        printf("✓ Mantener monitoreo de rutina\n");
+        printf("✓ Ventilar espacios interiores\n");
+    } else {
+        printf("⚠ Limitar tiempo de exposición al aire libre\n");
+        printf("⚠ Usar mascarilla si es necesario salir\n");
+        printf("⚠ Mantener ventanas cerradas\n");
+        printf("⚠ Activar purificadores de aire si están disponibles\n");
         
-        char estado[16];
-        if(excesos == 0) {
-            strcpy(estado, "Bueno");
-        } else if(excesos <= 1) {
-            strcpy(estado, "Moderado");
-        } else if(excesos <= 2) {
-            strcpy(estado, "Danino");
-        } else {
-            strcpy(estado, "Peligroso");
+        if(contaminantes_excedidos >= 3) {
+            printf("❌ URGENTE: Grupos vulnerables deben permanecer en interiores\n");
+            printf("❌ Suspender actividades deportivas al aire libre\n");
         }
-        
-        printf("%02d/%02d/%04d | %-6.1f | %-6.1f | %-6.1f | %-6.1f | %s\n",
-               zonas[zona_seleccionada].historico_fechas[i].fecha.dia,
-               zonas[zona_seleccionada].historico_fechas[i].fecha.mes,
-               zonas[zona_seleccionada].historico_fechas[i].fecha.año,
-               zonas[zona_seleccionada].historico_fechas[i].niveles.co2,
-               zonas[zona_seleccionada].historico_fechas[i].niveles.so2,
-               zonas[zona_seleccionada].historico_fechas[i].niveles.no2,
-               zonas[zona_seleccionada].historico_fechas[i].niveles.pm25,
-               estado);
     }
     
-    // 4. RECOMENDACIONES ESPECÍFICAS
-    printf("\nRECOMENDACIONES PARA %s:\n", zonas[zona_seleccionada].nombre);
-    printf("-----------------------------------------------\n");
-    
-    int total_excesos = 0;
-    if(zonas[zona_seleccionada].niveles_actuales.co2 > LIMITE_CO2_OMS) total_excesos++;
-    if(zonas[zona_seleccionada].niveles_actuales.so2 > LIMITE_SO2_OMS) total_excesos++;
-    if(zonas[zona_seleccionada].niveles_actuales.no2 > LIMITE_NO2_OMS) total_excesos++;
-    if(zonas[zona_seleccionada].niveles_actuales.pm25 > LIMITE_PM25_OMS) total_excesos++;
-    
-    // Determinar nivel de alerta y usar función de recomendaciones
-    int nivel_alerta_zona;
-    if(total_excesos == 0) {
-        nivel_alerta_zona = ALERTA_VERDE;
-    } else if(total_excesos <= 1) {
-        nivel_alerta_zona = ALERTA_AMARILLA;
-    } else if(total_excesos <= 2) {
-        nivel_alerta_zona = ALERTA_NARANJA;
-    } else {
-        nivel_alerta_zona = ALERTA_ROJA;
-    }
-    
-    // Reutilizar función de recomendaciones
-    mostrarRecomendaciones(nivel_alerta_zona, "ZONA");
-    
-    printf("\n========================================================\n");
+    printf("\n===========================================\n");
 }
 
 void mostrarEstadoSistema(ZonaUrbana zonas[])
