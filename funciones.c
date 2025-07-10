@@ -1754,35 +1754,33 @@ void exportarReportePorZona(ZonaUrbana zonas[], int zona_id) {
     time_t tiempo_actual = time(NULL);
     struct tm *tiempo_local = localtime(&tiempo_actual);
     
-    /* Arte ASCII mejorado y encabezado visual */
+    /* Arte ASCII mejorado y encabezado visual - VERSION LIMPIA SIN SOMBRAS */
     fprintf(archivo, "╔══════════════════════════════════════════════════════════════════════════════════╗\n");
     fprintf(archivo, "║                                                                                  ║\n");
-    fprintf(archivo, "║    ░█████╗░██╗██████╗░      ░██████╗░██╗░░░██╗░█████╗░██╗░░░░░██╗████████╗██╗░░░██╗   ║\n");
-    fprintf(archivo, "║    ██╔══██╗██║██╔══██╗      ██╔═══██╗██║░░░██║██╔══██╗██║░░░░░██║╚══██╔══╝╚██╗░██╔╝   ║\n");
-    fprintf(archivo, "║    ███████║██║██████╔╝      ██║░░░██║██║░░░██║███████║██║░░░░░██║░░░██║░░░░╚████╔╝░   ║\n");
-    fprintf(archivo, "║    ██╔══██║██║██╔══██╗      ██║▄▄░██║██║░░░██║██╔══██║██║░░░░░██║░░░██║░░░░░╚██╔╝░░   ║\n");
-    fprintf(archivo, "║    ██║░░██║██║██║░░██║      ╚██████╔╝╚██████╔╝██║░░██║███████╗██║░░░██║░░░░░░██║░░░   ║\n");
-    fprintf(archivo, "║    ╚═╝░░╚═╝╚═╝╚═╝░░╚═╝      ░╚═════╝░░╚═════╝░╚═╝░░╚═╝╚══════╝╚═╝░░░╚═╝░░░░░░╚═╝░░░   ║\n");
+    fprintf(archivo, "║      █████  ██ ██████       ██████  ██   ██  █████  ██      ██ ████████ ██   ██  ║\n");
+    fprintf(archivo, "║     ██   ██ ██ ██   ██     ██    ██ ██   ██ ██   ██ ██      ██    ██     ██ ██   ║\n");
+    fprintf(archivo, "║     ███████ ██ ██████      ██    ██ ██   ██ ███████ ██      ██    ██      ███    ║\n");
+    fprintf(archivo, "║     ██   ██ ██ ██   ██     ██ ██ ██ ██   ██ ██   ██ ██      ██    ██      ██     ║\n");
+    fprintf(archivo, "║     ██   ██ ██ ██   ██      ██████   █████  ██   ██ ███████ ██    ██      ██     ║\n");
     fprintf(archivo, "║                                                                                  ║\n");
-    fprintf(archivo, "║               ███╗░░░███╗░█████╗░███╗░░██╗██╗████████╗░█████╗░██████╗░                ║\n");
-    fprintf(archivo, "║               ████╗░████║██╔══██╗████╗░██║██║╚══██╔══╝██╔══██╗██╔══██╗               ║\n");
-    fprintf(archivo, "║               ██╔████╔██║██║░░██║██╔██╗██║██║░░░██║░░░██║░░██║██████╔╝               ║\n");
-    fprintf(archivo, "║               ██║╚██╔╝██║██║░░██║██║╚████║██║░░░██║░░░██║░░██║██╔══██╗               ║\n");
-    fprintf(archivo, "║               ██║░╚═╝░██║╚█████╔╝██║░╚███║██║░░░██║░░░╚█████╔╝██║░░██║               ║\n");
-    fprintf(archivo, "║               ╚═╝░░░░░╚═╝░╚════╝░╚═╝░░╚══╝╚═╝░░░╚═╝░░░░╚════╝░╚═╝░░╚═╝               ║\n");
+    fprintf(archivo, "║            ███    ███  ██████  ███    ██ ██ ████████  ██████  ██████            ║\n");
+    fprintf(archivo, "║            ████  ████ ██    ██ ████   ██ ██    ██    ██    ██ ██   ██           ║\n");
+    fprintf(archivo, "║            ██ ████ ██ ██    ██ ██ ██  ██ ██    ██    ██    ██ ██████            ║\n");
+    fprintf(archivo, "║            ██  ██  ██ ██    ██ ██  ██ ██ ██    ██    ██    ██ ██   ██           ║\n");
+    fprintf(archivo, "║            ██      ██  ██████  ██   ████ ██    ██     ██████  ██   ██           ║\n");
     fprintf(archivo, "║                                                                                  ║\n");
     fprintf(archivo, "║                   ╔═══════════════════════════════════════════════╗              ║\n");
-    fprintf(archivo, "║                   ║        🌍 MONITOREO AMBIENTAL QUITO 🌍        ║              ║\n");
+    fprintf(archivo, "║                   ║          MONITOREO AMBIENTAL QUITO           ║              ║\n");
     fprintf(archivo, "║                   ║           SISTEMA DE CALIDAD DEL AIRE         ║              ║\n");
     fprintf(archivo, "║                   ║               ECUADOR - 2025                  ║              ║\n");
-    fprintf(archivo, "║                   ║          📊 REPORTE PROFESIONAL 📊           ║              ║\n");
+    fprintf(archivo, "║                   ║            REPORTE PROFESIONAL               ║              ║\n");
     fprintf(archivo, "║                   ╚═══════════════════════════════════════════════╝              ║\n");
     fprintf(archivo, "║                                                                                  ║\n");
     fprintf(archivo, "╚══════════════════════════════════════════════════════════════════════════════════╝\n");
     fprintf(archivo, "                                                                                    \n");
     fprintf(archivo, "    ╔═══════════════════════════════════════════════════════════════════════════╗  \n");
-    fprintf(archivo, "    ║  🌟 SISTEMA PROFESIONAL DE MONITOREO ATMOSFERICO - ESTILO AIRNOW EPA 🌟  ║  \n");
-    fprintf(archivo, "    ║                          Compatible con Estándares OMS                   ║  \n");
+    fprintf(archivo, "    ║    SISTEMA PROFESIONAL DE MONITOREO ATMOSFERICO - ESTILO AIRNOW EPA    ║  \n");
+    fprintf(archivo, "    ║                          Compatible con Estandares OMS                   ║  \n");
     fprintf(archivo, "    ╚═══════════════════════════════════════════════════════════════════════════╝  \n");
     fprintf(archivo, "                                                                                    \n");
     
@@ -1795,33 +1793,27 @@ void exportarReportePorZona(ZonaUrbana zonas[], int zona_id) {
     
     char categoria_aqi[30];
     char color_aqi[20];
-    char icono_aqi[10];
     int valor_aqi;
     
     if(excesos_actuales == 0) {
         strcpy(categoria_aqi, "BUENO");
         strcpy(color_aqi, "VERDE");
-        strcpy(icono_aqi, "😊");
         valor_aqi = 25;
     } else if(excesos_actuales == 1) {
         strcpy(categoria_aqi, "MODERADO");
         strcpy(color_aqi, "AMARILLO");
-        strcpy(icono_aqi, "😐");
         valor_aqi = 75;
     } else if(excesos_actuales == 2) {
         strcpy(categoria_aqi, "DANINO PARA SENSIBLES");
         strcpy(color_aqi, "NARANJA");
-        strcpy(icono_aqi, "😷");
         valor_aqi = 125;
     } else if(excesos_actuales == 3) {
         strcpy(categoria_aqi, "DANINO");
         strcpy(color_aqi, "ROJO");
-        strcpy(icono_aqi, "😨");
         valor_aqi = 175;
     } else {
         strcpy(categoria_aqi, "MUY DANINO");
         strcpy(color_aqi, "MORADO");
-        strcpy(icono_aqi, "☠️");
         valor_aqi = 225;
     }
     
@@ -1829,44 +1821,44 @@ void exportarReportePorZona(ZonaUrbana zonas[], int zona_id) {
     fprintf(archivo, "┌─────────────────────────────────────────────────────────────────────────────┐\n");
     fprintf(archivo, "│                           REPORTE DE CALIDAD DEL AIRE                      │\n");
     fprintf(archivo, "├─────────────────────────────────────────────────────────────────────────────┤\n");
-    fprintf(archivo, "│ 📍 Zona: %-30s                                   │\n", zona->nombre);
-    fprintf(archivo, "│ 🆔 ID de Zona: %-3d                                                      │\n", zona->id_zona);
-    fprintf(archivo, "│ 📅 Fecha: %02d/%02d/%04d a las %02d:%02d                                       │\n", 
+    fprintf(archivo, "│  Zona: %-30s                                      │\n", zona->nombre);
+    fprintf(archivo, "│  ID de Zona: %-3d                                                         │\n", zona->id_zona);
+    fprintf(archivo, "│  Fecha: %02d/%02d/%04d a las %02d:%02d                                          │\n", 
             tiempo_local->tm_mday, tiempo_local->tm_mon + 1, tiempo_local->tm_year + 1900,
             tiempo_local->tm_hour, tiempo_local->tm_min);
-    fprintf(archivo, "│ 📊 Días monitoreados: %-3d                                                │\n", zona->dias_registrados);
+    fprintf(archivo, "│  Dias monitoreados: %-3d                                                   │\n", zona->dias_registrados);
     fprintf(archivo, "└─────────────────────────────────────────────────────────────────────────────┘\n\n");
     
     // ÍNDICE DE CALIDAD DEL AIRE PRINCIPAL
     fprintf(archivo, "╔══════════════════════════════════════════════════════════════════════════════════╗\n");
-    fprintf(archivo, "║                          🌟 ÍNDICE DE CALIDAD DEL AIRE 🌟                       ║\n");
+    fprintf(archivo, "║                            INDICE DE CALIDAD DEL AIRE                           ║\n");
     fprintf(archivo, "╠══════════════════════════════════════════════════════════════════════════════════╣\n");
     fprintf(archivo, "║                                                                                  ║\n");
-    fprintf(archivo, "║                               🔢 AQI: %3d 🔢                                     ║\n", valor_aqi);
+    fprintf(archivo, "║                                 AQI: %3d                                       ║\n", valor_aqi);
     fprintf(archivo, "║                                                                                  ║\n");
-    fprintf(archivo, "║                           %s  %s  %s                                          ║\n", icono_aqi, categoria_aqi, icono_aqi);
-    fprintf(archivo, "║                              🎨 Nivel: %s 🎨                                   ║\n", color_aqi);
+    fprintf(archivo, "║                               %s                                               ║\n", categoria_aqi);
+    fprintf(archivo, "║                                Nivel: %s                                       ║\n", color_aqi);
     fprintf(archivo, "║                                                                                  ║\n");
     
     if(excesos_actuales == 0) {
         fprintf(archivo, "║    ┌─────────────────────────────────────────────────────────────────────────┐    ║\n");
-        fprintf(archivo, "║    │ ✅ AIRE LIMPIO Y SALUDABLE - CONDICIONES ÓPTIMAS PARA TODOS            │    ║\n");
+        fprintf(archivo, "║    │ * AIRE LIMPIO Y SALUDABLE - CONDICIONES OPTIMAS PARA TODOS            │    ║\n");
         fprintf(archivo, "║    └─────────────────────────────────────────────────────────────────────────┘    ║\n");
     } else if(excesos_actuales == 1) {
         fprintf(archivo, "║    ┌─────────────────────────────────────────────────────────────────────────┐    ║\n");
-        fprintf(archivo, "║    │ ⚠️ CALIDAD ACEPTABLE - PRECAUCIÓN PARA GRUPOS SENSIBLES                │    ║\n");
+        fprintf(archivo, "║    │ ! CALIDAD ACEPTABLE - PRECAUCION PARA GRUPOS SENSIBLES                │    ║\n");
         fprintf(archivo, "║    └─────────────────────────────────────────────────────────────────────────┘    ║\n");
     } else if(excesos_actuales <= 2) {
         fprintf(archivo, "║    ┌─────────────────────────────────────────────────────────────────────────┐    ║\n");
-        fprintf(archivo, "║    │ 🚨 DAÑINO PARA GRUPOS SENSIBLES - LIMITE ACTIVIDADES EXTERIORES        │    ║\n");
+        fprintf(archivo, "║    │ !! DANINO PARA GRUPOS SENSIBLES - LIMITE ACTIVIDADES EXTERIORES        │    ║\n");
         fprintf(archivo, "║    └─────────────────────────────────────────────────────────────────────────┘    ║\n");
     } else if(excesos_actuales == 3) {
         fprintf(archivo, "║    ┌─────────────────────────────────────────────────────────────────────────┐    ║\n");
-        fprintf(archivo, "║    │ ❌ AIRE DAÑINO - TODOS DEBEN REDUCIR EXPOSICIÓN EXTERIOR                │    ║\n");
+        fprintf(archivo, "║    │ !!! AIRE DANINO - TODOS DEBEN REDUCIR EXPOSICION EXTERIOR                │    ║\n");
         fprintf(archivo, "║    └─────────────────────────────────────────────────────────────────────────┘    ║\n");
     } else {
         fprintf(archivo, "║    ┌─────────────────────────────────────────────────────────────────────────┐    ║\n");
-        fprintf(archivo, "║    │ ☠️ PELIGROSO - EVITAR COMPLETAMENTE ACTIVIDADES AL AIRE LIBRE            │    ║\n");
+        fprintf(archivo, "║    │ !!!! PELIGROSO - EVITAR COMPLETAMENTE ACTIVIDADES AL AIRE LIBRE            │    ║\n");
         fprintf(archivo, "║    └─────────────────────────────────────────────────────────────────────────┘    ║\n");
     }
     
@@ -1875,39 +1867,39 @@ void exportarReportePorZona(ZonaUrbana zonas[], int zona_id) {
     
     /* NIVELES ACTUALES */
     fprintf(archivo, "╔══════════════════════════════════════════════════════════════════════════════════╗\n");
-    fprintf(archivo, "║                     🔬 NIVELES ACTUALES DE CONTAMINANTES 🔬                     ║\n");
+    fprintf(archivo, "║                       NIVELES ACTUALES DE CONTAMINANTES                         ║\n");
     fprintf(archivo, "╠══════════════════════════════════════════════════════════════════════════════════╣\n");
     fprintf(archivo, "║                                                                                  ║\n");
     
-    fprintf(archivo, "║ 🏭 CO2:    %6.1f ppm      │ Límite OMS: %6.1f │ ", zona->niveles_actuales.co2, LIMITE_CO2_OMS);
+    fprintf(archivo, "║  CO2:    %6.1f ppm      │ Limite OMS: %6.1f │ ", zona->niveles_actuales.co2, LIMITE_CO2_OMS);
     if(zona->niveles_actuales.co2 <= LIMITE_CO2_OMS) {
-        fprintf(archivo, "✅ NORMAL         ║\n");
+        fprintf(archivo, "* NORMAL         ║\n");
     } else {
-        fprintf(archivo, "❌ EXCEDIDO %.1f%%   ║\n", 
+        fprintf(archivo, "! EXCEDIDO %.1f%%   ║\n", 
                 (zona->niveles_actuales.co2 / LIMITE_CO2_OMS - 1) * 100);
     }
     
-    fprintf(archivo, "║ 🌫️ SO2:    %6.1f ug/m3   │ Límite OMS: %6.1f │ ", zona->niveles_actuales.so2, LIMITE_SO2_OMS);
+    fprintf(archivo, "║  SO2:    %6.1f ug/m3   │ Limite OMS: %6.1f │ ", zona->niveles_actuales.so2, LIMITE_SO2_OMS);
     if(zona->niveles_actuales.so2 <= LIMITE_SO2_OMS) {
-        fprintf(archivo, "✅ NORMAL         ║\n");
+        fprintf(archivo, "* NORMAL         ║\n");
     } else {
-        fprintf(archivo, "❌ EXCEDIDO %.1f%%   ║\n", 
+        fprintf(archivo, "! EXCEDIDO %.1f%%   ║\n", 
                 (zona->niveles_actuales.so2 / LIMITE_SO2_OMS - 1) * 100);
     }
     
-    fprintf(archivo, "║ 🚗 NO2:    %6.1f ug/m3   │ Límite OMS: %6.1f │ ", zona->niveles_actuales.no2, LIMITE_NO2_OMS);
+    fprintf(archivo, "║  NO2:    %6.1f ug/m3   │ Limite OMS: %6.1f │ ", zona->niveles_actuales.no2, LIMITE_NO2_OMS);
     if(zona->niveles_actuales.no2 <= LIMITE_NO2_OMS) {
-        fprintf(archivo, "✅ NORMAL         ║\n");
+        fprintf(archivo, "* NORMAL         ║\n");
     } else {
-        fprintf(archivo, "❌ EXCEDIDO %.1f%%   ║\n", 
+        fprintf(archivo, "! EXCEDIDO %.1f%%   ║\n", 
                 (zona->niveles_actuales.no2 / LIMITE_NO2_OMS - 1) * 100);
     }
     
-    fprintf(archivo, "║ 🌪️ PM2.5:  %6.1f ug/m3   │ Límite OMS: %6.1f │ ", zona->niveles_actuales.pm25, LIMITE_PM25_OMS);
+    fprintf(archivo, "║  PM2.5:  %6.1f ug/m3   │ Limite OMS: %6.1f │ ", zona->niveles_actuales.pm25, LIMITE_PM25_OMS);
     if(zona->niveles_actuales.pm25 <= LIMITE_PM25_OMS) {
-        fprintf(archivo, "✅ NORMAL         ║\n");
+        fprintf(archivo, "* NORMAL         ║\n");
     } else {
-        fprintf(archivo, "❌ EXCEDIDO %.1f%%   ║\n", 
+        fprintf(archivo, "! EXCEDIDO %.1f%%   ║\n", 
                 (zona->niveles_actuales.pm25 / LIMITE_PM25_OMS - 1) * 100);
     }
     
@@ -1917,65 +1909,65 @@ void exportarReportePorZona(ZonaUrbana zonas[], int zona_id) {
     
     /* CONDICIONES CLIMATICAS */
     fprintf(archivo, "╔══════════════════════════════════════════════════════════════════════════════════╗\n");
-    fprintf(archivo, "║                      🌤️ CONDICIONES CLIMÁTICAS ACTUALES 🌤️                     ║\n");
+    fprintf(archivo, "║                        CONDICIONES CLIMATICAS ACTUALES                          ║\n");
     fprintf(archivo, "╠══════════════════════════════════════════════════════════════════════════════════╣\n");
     fprintf(archivo, "║                                                                                  ║\n");
-    fprintf(archivo, "║ 🌡️ Temperatura:          %6.1f°C     │   🌊 Humedad:             %6.1f%%     ║\n", 
+    fprintf(archivo, "║  Temperatura:          %6.1f°C     │   Humedad:             %6.1f%%     ║\n", 
             zona->clima_actual.temperatura, zona->clima_actual.humedad);
     fprintf(archivo, "║                                     │                                       ║\n");
-    fprintf(archivo, "║ 🌬️ Velocidad del viento: %6.1f km/h  │   📊 Presión atmosférica: %6.1f hPa  ║\n", 
+    fprintf(archivo, "║  Velocidad del viento: %6.1f km/h  │   Presion atmosferica: %6.1f hPa  ║\n", 
             zona->clima_actual.velocidad_viento, zona->clima_actual.presion_atmosferica);
     fprintf(archivo, "║                                                                                  ║\n");
     fprintf(archivo, "╚══════════════════════════════════════════════════════════════════════════════════╝\n\n");
     
     /* RECOMENDACIONES DE SALUD */
     fprintf(archivo, "╔══════════════════════════════════════════════════════════════════════════════════╗\n");
-    fprintf(archivo, "║                         💊 RECOMENDACIONES DE SALUD 💊                          ║\n");
+    fprintf(archivo, "║                           RECOMENDACIONES DE SALUD                              ║\n");
     fprintf(archivo, "╠══════════════════════════════════════════════════════════════════════════════════╣\n");
     fprintf(archivo, "║                                                                                  ║\n");
     
     if(excesos_actuales == 0) {
-        fprintf(archivo, "║ 👥 POBLACIÓN GENERAL:                                                            ║\n");
-        fprintf(archivo, "║    ✨ Excelente día para actividades al aire libre                              ║\n");
-        fprintf(archivo, "║    🏃‍♂️ Ideal para ejercicio y deportes                                            ║\n");
-        fprintf(archivo, "║    🧒 Perfecto para que los niños jueguen afuera                                ║\n");
+        fprintf(archivo, "║  POBLACION GENERAL:                                                            ║\n");
+        fprintf(archivo, "║    * Excelente dia para actividades al aire libre                              ║\n");
+        fprintf(archivo, "║    * Ideal para ejercicio y deportes                                            ║\n");
+        fprintf(archivo, "║    * Perfecto para que los ninos jueguen afuera                                ║\n");
         fprintf(archivo, "║                                                                                  ║\n");
-        fprintf(archivo, "║ 👶 GRUPOS SENSIBLES:                                                             ║\n");
-        fprintf(archivo, "║    ✅ Sin restricciones                                                          ║\n");
-        fprintf(archivo, "║    🫁 Condiciones óptimas para personas con asma                                ║\n");
-        fprintf(archivo, "║    👵 Seguro para adultos mayores y niños pequeños                              ║\n");
+        fprintf(archivo, "║  GRUPOS SENSIBLES:                                                             ║\n");
+        fprintf(archivo, "║    * Sin restricciones                                                          ║\n");
+        fprintf(archivo, "║    * Condiciones optimas para personas con asma                                ║\n");
+        fprintf(archivo, "║    * Seguro para adultos mayores y ninos pequenos                              ║\n");
     } else if(excesos_actuales <= 1) {
-        fprintf(archivo, "║ 👥 POBLACIÓN GENERAL:                                                            ║\n");
-        fprintf(archivo, "║    ✅ Actividades al aire libre son aceptables                                  ║\n");
-        fprintf(archivo, "║    ⚠️ Considere reducir ejercicio intenso prolongado                            ║\n");
-        fprintf(archivo, "║    😊 Condiciones normales para la mayoría de personas                          ║\n");
+        fprintf(archivo, "║  POBLACION GENERAL:                                                            ║\n");
+        fprintf(archivo, "║    * Actividades al aire libre son aceptables                                  ║\n");
+        fprintf(archivo, "║    ! Considere reducir ejercicio intenso prolongado                            ║\n");
+        fprintf(archivo, "║    * Condiciones normales para la mayoria de personas                          ║\n");
         fprintf(archivo, "║                                                                                  ║\n");
-        fprintf(archivo, "║ 👶 GRUPOS SENSIBLES:                                                             ║\n");
-        fprintf(archivo, "║    🫁 Personas con asma: limite actividades prolongadas                         ║\n");
-        fprintf(archivo, "║    👵 Adultos mayores: prefiera actividades en interiores                       ║\n");
-        fprintf(archivo, "║    🧒 Niños: reduzca tiempo de juego al aire libre                              ║\n");
+        fprintf(archivo, "║  GRUPOS SENSIBLES:                                                             ║\n");
+        fprintf(archivo, "║    ! Personas con asma: limite actividades prolongadas                         ║\n");
+        fprintf(archivo, "║    ! Adultos mayores: prefiera actividades en interiores                       ║\n");
+        fprintf(archivo, "║    ! Ninos: reduzca tiempo de juego al aire libre                              ║\n");
     } else if(excesos_actuales <= 2) {
-        fprintf(archivo, "║ 👥 POBLACIÓN GENERAL:                                                            ║\n");
-        fprintf(archivo, "║    ⚠️ Reduzca actividades al aire libre prolongadas                             ║\n");
-        fprintf(archivo, "║    🚫 Evite ejercicio intenso al aire libre                                     ║\n");
-        fprintf(archivo, "║    😷 Use mascarilla si es sensible a la contaminación                          ║\n");
+        fprintf(archivo, "║  POBLACION GENERAL:                                                            ║\n");
+        fprintf(archivo, "║    ! Reduzca actividades al aire libre prolongadas                             ║\n");
+        fprintf(archivo, "║    ! Evite ejercicio intenso al aire libre                                     ║\n");
+        fprintf(archivo, "║    ! Use mascarilla si es sensible a la contaminacion                          ║\n");
         fprintf(archivo, "║                                                                                  ║\n");
-        fprintf(archivo, "║ 👶 GRUPOS SENSIBLES:                                                             ║\n");
-        fprintf(archivo, "║    🏠 Evite actividades al aire libre                                           ║\n");
-        fprintf(archivo, "║    🚪 Permanezca en interiores cuando sea posible                               ║\n");
-        fprintf(archivo, "║    💊 Tenga medicamentos de emergencia a mano                                   ║\n");
+        fprintf(archivo, "║  GRUPOS SENSIBLES:                                                             ║\n");
+        fprintf(archivo, "║    ! Evite actividades al aire libre                                           ║\n");
+        fprintf(archivo, "║    ! Permanezca en interiores cuando sea posible                               ║\n");
+        fprintf(archivo, "║    ! Tenga medicamentos de emergencia a mano                                   ║\n");
     } else {
-        fprintf(archivo, "║ 👥 POBLACIÓN GENERAL:                                                            ║\n");
-        fprintf(archivo, "║    🚫 Evite todas las actividades al aire libre                                 ║\n");
-        fprintf(archivo, "║    🏠 Permanezca en interiores                                                   ║\n");
-        fprintf(archivo, "║    😷 Use mascarilla si debe salir                                               ║\n");
-        fprintf(archivo, "║    ⛔ Cancele eventos deportivos al aire libre                                   ║\n");
+        fprintf(archivo, "║  POBLACION GENERAL:                                                            ║\n");
+        fprintf(archivo, "║    ! Evite todas las actividades al aire libre                                 ║\n");
+        fprintf(archivo, "║    ! Permanezca en interiores                                                   ║\n");
+        fprintf(archivo, "║    ! Use mascarilla si debe salir                                               ║\n");
+        fprintf(archivo, "║    ! Cancele eventos deportivos al aire libre                                   ║\n");
         fprintf(archivo, "║                                                                                  ║\n");
-        fprintf(archivo, "║ 👶 GRUPOS SENSIBLES:                                                             ║\n");
-        fprintf(archivo, "║    🚨 ALERTA MÉDICA: Permanezca en interiores                                   ║\n");
-        fprintf(archivo, "║    💊 Tenga medicamentos listos                                                  ║\n");
-        fprintf(archivo, "║    🏥 Contacte a su médico si presenta síntomas                                  ║\n");
-        fprintf(archivo, "║    🆘 Busque atención médica si tiene dificultad respiratoria                   ║\n");
+        fprintf(archivo, "║  GRUPOS SENSIBLES:                                                             ║\n");
+        fprintf(archivo, "║    !! ALERTA MEDICA: Permanezca en interiores                                   ║\n");
+        fprintf(archivo, "║    !! Tenga medicamentos listos                                                  ║\n");
+        fprintf(archivo, "║    !! Contacte a su medico si presenta sintomas                                  ║\n");
+        fprintf(archivo, "║    !! Busque atencion medica si tiene dificultad respiratoria                   ║\n");
     }
     
     fprintf(archivo, "║                                                                                  ║\n");
@@ -1983,7 +1975,7 @@ void exportarReportePorZona(ZonaUrbana zonas[], int zona_id) {
     
     /* PRONOSTICO DE 24 HORAS */
     fprintf(archivo, "╔══════════════════════════════════════════════════════════════════════════════════╗\n");
-    fprintf(archivo, "║                        🔮 PRONÓSTICO PARA LAS PRÓXIMAS 24 HORAS 🔮               ║\n");
+    fprintf(archivo, "║                          PRONOSTICO PARA LAS PROXIMAS 24 HORAS                 ║\n");
     fprintf(archivo, "╠══════════════════════════════════════════════════════════════════════════════════╣\n");
     fprintf(archivo, "║                                                                                  ║\n");
     
@@ -1999,35 +1991,35 @@ void exportarReportePorZona(ZonaUrbana zonas[], int zona_id) {
         float pronostico_no2 = zona->niveles_actuales.no2 + tendencia_no2;
         float pronostico_pm25 = zona->niveles_actuales.pm25 + tendencia_pm25;
         
-        fprintf(archivo, "║ 📈 NIVELES ESPERADOS:                                                            ║\n");
+        fprintf(archivo, "║  NIVELES ESPERADOS:                                                            ║\n");
         fprintf(archivo, "║                                                                                  ║\n");
         
-        fprintf(archivo, "║ 🏭 CO2:   %6.1f ppm     │ Tendencia: ", pronostico_co2);
+        fprintf(archivo, "║  CO2:   %6.1f ppm     │ Tendencia: ", pronostico_co2);
         if(tendencia_co2 > 0) {
-            fprintf(archivo, "📈 SUBIENDO +%5.1f            ║\n", tendencia_co2);
+            fprintf(archivo, "* SUBIENDO +%5.1f            ║\n", tendencia_co2);
         } else {
-            fprintf(archivo, "📉 BAJANDO %6.1f            ║\n", tendencia_co2);
+            fprintf(archivo, "* BAJANDO %6.1f            ║\n", tendencia_co2);
         }
         
-        fprintf(archivo, "║ 🌫️ SO2:   %6.1f ug/m3  │ Tendencia: ", pronostico_so2);
+        fprintf(archivo, "║  SO2:   %6.1f ug/m3  │ Tendencia: ", pronostico_so2);
         if(tendencia_so2 > 0) {
-            fprintf(archivo, "📈 SUBIENDO +%5.1f            ║\n", tendencia_so2);
+            fprintf(archivo, "* SUBIENDO +%5.1f            ║\n", tendencia_so2);
         } else {
-            fprintf(archivo, "📉 BAJANDO %6.1f            ║\n", tendencia_so2);
+            fprintf(archivo, "* BAJANDO %6.1f            ║\n", tendencia_so2);
         }
         
-        fprintf(archivo, "║ 🚗 NO2:   %6.1f ug/m3  │ Tendencia: ", pronostico_no2);
+        fprintf(archivo, "║  NO2:   %6.1f ug/m3  │ Tendencia: ", pronostico_no2);
         if(tendencia_no2 > 0) {
-            fprintf(archivo, "📈 SUBIENDO +%5.1f            ║\n", tendencia_no2);
+            fprintf(archivo, "* SUBIENDO +%5.1f            ║\n", tendencia_no2);
         } else {
-            fprintf(archivo, "📉 BAJANDO %6.1f            ║\n", tendencia_no2);
+            fprintf(archivo, "* BAJANDO %6.1f            ║\n", tendencia_no2);
         }
         
-        fprintf(archivo, "║ 🌪️ PM2.5: %6.1f ug/m3  │ Tendencia: ", pronostico_pm25);
+        fprintf(archivo, "║  PM2.5: %6.1f ug/m3  │ Tendencia: ", pronostico_pm25);
         if(tendencia_pm25 > 0) {
-            fprintf(archivo, "📈 SUBIENDO +%5.1f            ║\n", tendencia_pm25);
+            fprintf(archivo, "* SUBIENDO +%5.1f            ║\n", tendencia_pm25);
         } else {
-            fprintf(archivo, "📉 BAJANDO %6.1f            ║\n", tendencia_pm25);
+            fprintf(archivo, "* BAJANDO %6.1f            ║\n", tendencia_pm25);
         }
         
         /* Calcular excesos proyectados */
@@ -2038,17 +2030,17 @@ void exportarReportePorZona(ZonaUrbana zonas[], int zona_id) {
         if(pronostico_pm25 > LIMITE_PM25_OMS) excesos_pronostico++;
         
         fprintf(archivo, "║                                                                                  ║\n");
-        fprintf(archivo, "║ 🎯 EXPECTATIVA DE CALIDAD:                                                       ║\n");
+        fprintf(archivo, "║  EXPECTATIVA DE CALIDAD:                                                       ║\n");
         if(excesos_pronostico < excesos_actuales) {
-            fprintf(archivo, "║    ✅ MEJORANDO - Se espera mejoría en las condiciones                           ║\n");
+            fprintf(archivo, "║    * MEJORANDO - Se espera mejoria en las condiciones                           ║\n");
         } else if(excesos_pronostico > excesos_actuales) {
-            fprintf(archivo, "║    ❌ EMPEORANDO - Se espera deterioro en las condiciones                       ║\n");
+            fprintf(archivo, "║    ! EMPEORANDO - Se espera deterioro en las condiciones                       ║\n");
         } else {
-            fprintf(archivo, "║    ⚖️ ESTABLE - Condiciones similares esperadas                                 ║\n");
+            fprintf(archivo, "║    = ESTABLE - Condiciones similares esperadas                                 ║\n");
         }
     } else {
-        fprintf(archivo, "║ ⚠️ Datos insuficientes para generar pronóstico confiable                        ║\n");
-        fprintf(archivo, "║    (Se requieren al menos 3 días de datos históricos)                           ║\n");
+        fprintf(archivo, "║ ! Datos insuficientes para generar pronostico confiable                        ║\n");
+        fprintf(archivo, "║    (Se requieren al menos 3 dias de datos historicos)                           ║\n");
     }
     
     fprintf(archivo, "║                                                                                  ║\n");
@@ -2139,24 +2131,23 @@ void exportarReportePorZona(ZonaUrbana zonas[], int zona_id) {
     
     /* PIE DEL REPORTE */
     fprintf(archivo, "╔══════════════════════════════════════════════════════════════════════════════════╗\n");
-    fprintf(archivo, "║                            📞 INFORMACIÓN ADICIONAL 📞                          ║\n");
+    fprintf(archivo, "║                              INFORMACION ADICIONAL                              ║\n");
     fprintf(archivo, "╠══════════════════════════════════════════════════════════════════════════════════╣\n");
     fprintf(archivo, "║                                                                                  ║\n");
-    fprintf(archivo, "║ 🌐 Para actualizaciones en tiempo real:    www.airnow-quito.gov.ec             ║\n");
-    fprintf(archivo, "║ 🚨 Emergencias ambientales:                911                                  ║\n");
-    fprintf(archivo, "║ 🏥 Salud respiratoria MSP:                  171                                  ║\n");
-    fprintf(archivo, "║ 📋 Los límites utilizados corresponden a las Guías OMS 2021                     ║\n");
+    fprintf(archivo, "║  Para actualizaciones en tiempo real:    www.airnow-quito.gov.ec             ║\n");
+    fprintf(archivo, "║  Emergencias ambientales:                911                                  ║\n");
+    fprintf(archivo, "║  Salud respiratoria MSP:                  171                                  ║\n");
+    fprintf(archivo, "║  Los limites utilizados corresponden a las Guias OMS 2021                     ║\n");
     fprintf(archivo, "║                                                                                  ║\n");
-    fprintf(archivo, "║              🌱 Cuidemos juntos la calidad del aire de Quito 🌱                 ║\n");
+    fprintf(archivo, "║                Cuidemos juntos la calidad del aire de Quito                   ║\n");
     fprintf(archivo, "║                                                                                  ║\n");
     fprintf(archivo, "╚══════════════════════════════════════════════════════════════════════════════════╝\n");
     fprintf(archivo, "                                                                                    \n");
-    fprintf(archivo, "              ███████╗███╗░░██╗██████╗░  ░█████╗░███████╗  ██████╗░███████╗██████╗░░█████╗░██████╗░████████╗\n");
-    fprintf(archivo, "              ██╔════╝████╗░██║██╔══██╗  ██╔══██╗██╔════╝  ██╔══██╗██╔════╝██╔══██╗██╔══██╗██╔══██╗╚══██╔══╝\n");
-    fprintf(archivo, "              █████╗░░██╔██╗██║██║░░██║  ██║░░██║█████╗░░  ██████╔╝█████╗░░██████╔╝██║░░██║██████╔╝░░░██║░░░\n");
-    fprintf(archivo, "              ██╔══╝░░██║╚████║██║░░██║  ██║░░██║██╔══╝░░  ██╔══██╗██╔══╝░░██╔═══╝░██║░░██║██╔══██╗░░░██║░░░\n");
-    fprintf(archivo, "              ███████╗██║░╚███║██████╔╝  ╚█████╔╝██║░░░░░  ██║░░██║███████╗██║░░░░░╚█████╔╝██║░░██║░░░██║░░░\n");
-    fprintf(archivo, "              ╚══════╝╚═╝░░╚══╝╚═════╝░  ░╚════╝░╚═╝░░░░░  ╚═╝░░╚═╝╚══════╝╚═╝░░░░░░╚════╝░╚═╝░░╚═╝░░░╚═╝░░░\n");
+    fprintf(archivo, "              ███████ ███  ██ ██████   █████  ███████  ██████  ███████ ██████   █████  ██████  ████████\n");
+    fprintf(archivo, "              ██      ████ ██ ██   ██ ██   ██ ██      ██   ██ ██      ██   ██ ██   ██ ██   ██    ██   \n");
+    fprintf(archivo, "              █████   ██ ████ ██   ██ ██   ██ █████   ██████  █████   ██████  ██   ██ ██████     ██   \n");
+    fprintf(archivo, "              ██      ██  ███ ██   ██ ██   ██ ██      ██   ██ ██      ██      ██   ██ ██   ██    ██   \n");
+    fprintf(archivo, "              ███████ ██   ██ ██████   █████  ██      ██   ██ ███████ ██       █████  ██   ██    ██   \n");
     fprintf(archivo, "                                                                                    \n");
     
     fclose(archivo);
