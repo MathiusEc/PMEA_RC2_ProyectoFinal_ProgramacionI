@@ -245,7 +245,7 @@ void registroDatosDiario(ZonaUrbana zonas[]) {
     
     // Validar datos de contaminantes con rangos específicos
     funcionValidarDatosdeRegistro(&zonas[id_zona - 1].niveles_actuales.co2, 
-                                 "CO2 (ppm)", 0.0, 1000.0);
+                                 "CO2 (ppm)", 0.0, 3000.0);
     
     funcionValidarDatosdeRegistro(&zonas[id_zona - 1].niveles_actuales.so2, 
                                  "SO2 (ug/m3)", 0.0, 500.0);
