@@ -1,3 +1,12 @@
 .vscode/
 # para borrar archivos ejecutables
 *.exe
+migrador_30_a_365.c
+
+# ignorar backups de la migracion de datos hecha
+# por el script migrador_30_a_365.c
+zona_1_backup_365.dat
+zona_2_backup_365.dat
+zona_3_backup_365.dat
+zona_4_backup_365.dat
+zona_5_backup_365.dat

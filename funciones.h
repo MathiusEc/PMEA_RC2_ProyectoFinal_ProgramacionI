@@ -1,5 +1,5 @@
 #define MAX_ZONAS 5
-#define MAX_DIAS_HISTORICOS 30
+#define MAX_DIAS_HISTORICOS 365
 #define MAX_NOMBRE 50 
 
 // Límites OMS (valores de referencia - Guías 2021)
