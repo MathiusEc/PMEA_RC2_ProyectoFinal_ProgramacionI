@@ -1347,20 +1347,27 @@ void corregirDatosIngresados(ZonaUrbana zonas[]) {
     
     // BUCLE PRINCIPAL: SELECCIÓN DE DÍA Y EDICIÓN
     do {
-        // Mostrar días disponibles con vista resumida
+        // Mostrar días disponibles con fechas (últimos 10 días)
         printf("\nDIAS DISPONIBLES PARA EDICION:\n");
         printf("=================================================================\n");
-        printf("Dia\tCO2\tSO2\tNO2\tPM2.5\n");
+        printf("Dia    Fecha      CO2     SO2     NO2     PM2.5\n");
         printf("-----------------------------------------------------------------\n");
-        for(int i = 0; i < zona->dias_registrados && i < 10; i++) {
-            printf("%d\t%.1f\t%.1f\t%.1f\t%.1f\n", i+1,
+        
+        int dias_mostrar = (zona->dias_registrados > 10) ? 10 : zona->dias_registrados;
+        
+        for(int i = 0; i < dias_mostrar; i++) {
+            printf("%-6d %02d/%02d/%02d %7.1f %7.1f %7.1f %7.1f\n", 
+                   i+1,
+                   zona->historico_fechas[i].fecha.dia,
+                   zona->historico_fechas[i].fecha.mes,
+                   zona->historico_fechas[i].fecha.año % 100, // Solo últimos 2 dígitos del año
                    zona->historico[i].co2, zona->historico[i].so2, 
                    zona->historico[i].no2, zona->historico[i].pm25);
         }
         printf("=================================================================\n");
         
         if(zona->dias_registrados > 10) {
-            printf("(Mostrando primeros 10 dias de %d disponibles)\n", zona->dias_registrados);
+            printf("(Mostrando ultimos 10 dias de %d disponibles)\n", zona->dias_registrados);
         }
 
         // Seleccionar día
@@ -1448,6 +1455,12 @@ void corregirDatosIngresados(ZonaUrbana zonas[]) {
                     zona->historico[dia].no2 = nuevos_valores[2];
                     zona->historico[dia].pm25 = nuevos_valores[3];
                     
+                    // Actualizar también el histórico con fechas
+                    zona->historico_fechas[dia].niveles.co2 = nuevos_valores[0];
+                    zona->historico_fechas[dia].niveles.so2 = nuevos_valores[1];
+                    zona->historico_fechas[dia].niveles.no2 = nuevos_valores[2];
+                    zona->historico_fechas[dia].niveles.pm25 = nuevos_valores[3];
+                    
                     // Actualizar niveles actuales si es el día más reciente
                     if(dia == 0) {
                         zona->niveles_actuales = zona->historico[0];
@@ -1455,6 +1468,9 @@ void corregirDatosIngresados(ZonaUrbana zonas[]) {
                     
                     printf("EXITO: Todos los contaminantes actualizados exitosamente.\n");
                     cambios_dia += 4;
+                    
+                    // Guardar inmediatamente para evitar pérdida de datos
+                    guardarZona(zona);
                 } else {
                     printf("ERROR: Cambios cancelados.\n");
                 }
@@ -1492,14 +1508,38 @@ void corregirDatosIngresados(ZonaUrbana zonas[]) {
 
             if(confirmacion == 's' || confirmacion == 'S') {
                 switch(subop) {
-                    case 1: zona->historico[dia].co2 = nuevo_valor; break;
-                    case 2: zona->historico[dia].so2 = nuevo_valor; break;
-                    case 3: zona->historico[dia].no2 = nuevo_valor; break;
-                    case 4: zona->historico[dia].pm25 = nuevo_valor; break;
-                    case 5: zona->clima_actual.temperatura = nuevo_valor; break;
-                    case 6: zona->clima_actual.velocidad_viento = nuevo_valor; break;
-                    case 7: zona->clima_actual.humedad = nuevo_valor; break;
-                    case 8: zona->clima_actual.presion_atmosferica = nuevo_valor; break;
+                    case 1: 
+                        zona->historico[dia].co2 = nuevo_valor; 
+                        zona->historico_fechas[dia].niveles.co2 = nuevo_valor;
+                        break;
+                    case 2: 
+                        zona->historico[dia].so2 = nuevo_valor; 
+                        zona->historico_fechas[dia].niveles.so2 = nuevo_valor;
+                        break;
+                    case 3: 
+                        zona->historico[dia].no2 = nuevo_valor; 
+                        zona->historico_fechas[dia].niveles.no2 = nuevo_valor;
+                        break;
+                    case 4: 
+                        zona->historico[dia].pm25 = nuevo_valor; 
+                        zona->historico_fechas[dia].niveles.pm25 = nuevo_valor;
+                        break;
+                    case 5: 
+                        zona->clima_actual.temperatura = nuevo_valor; 
+                        zona->historico_fechas[dia].clima.temperatura = nuevo_valor;
+                        break;
+                    case 6: 
+                        zona->clima_actual.velocidad_viento = nuevo_valor; 
+                        zona->historico_fechas[dia].clima.velocidad_viento = nuevo_valor;
+                        break;
+                    case 7: 
+                        zona->clima_actual.humedad = nuevo_valor; 
+                        zona->historico_fechas[dia].clima.humedad = nuevo_valor;
+                        break;
+                    case 8: 
+                        zona->clima_actual.presion_atmosferica = nuevo_valor; 
+                        zona->historico_fechas[dia].clima.presion_atmosferica = nuevo_valor;
+                        break;
                 }
                 
                 // Si editamos el día más reciente (día 1 = índice 0), actualizar niveles actuales
